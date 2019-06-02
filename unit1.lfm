@@ -1,0 +1,394 @@
+object Form1: TForm1
+  Left = 341
+  Height = 740
+  Top = 186
+  Width = 1188
+  Caption = 'Form1'
+  ClientHeight = 740
+  ClientWidth = 1188
+  DesignTimePPI = 120
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  Position = poDefaultPosOnly
+  LCLVersion = '2.1.0.0'
+  object Panel1: TPanel
+    Left = 0
+    Height = 218
+    Top = 0
+    Width = 1188
+    Align = alTop
+    BevelOuter = bvNone
+    ClientHeight = 218
+    ClientWidth = 1188
+    ParentFont = False
+    TabOrder = 0
+    object clbFilter: TCheckListBox
+      Left = 0
+      Height = 218
+      Top = 0
+      Width = 285
+      Align = alLeft
+      ItemHeight = 0
+      ParentFont = False
+      TabOrder = 0
+    end
+    object mePaths: TMemo
+      Left = 285
+      Height = 218
+      Top = 0
+      Width = 527
+      Align = alClient
+      Lines.Strings = (
+        'mePaths'
+      )
+      ParentFont = False
+      ScrollBars = ssAutoBoth
+      TabOrder = 1
+      WordWrap = False
+    end
+    object Panel2: TPanel
+      Left = 812
+      Height = 218
+      Top = 0
+      Width = 376
+      Align = alRight
+      ClientHeight = 218
+      ClientWidth = 376
+      ParentFont = False
+      TabOrder = 2
+      object Bevel1: TBevel
+        Left = 1
+        Height = 112
+        Top = 1
+        Width = 374
+        Align = alTop
+        Shape = bsBottomLine
+      end
+      object pbClassifier: TProgressBar
+        Left = 8
+        Height = 25
+        Top = 126
+        Width = 245
+        ParentFont = False
+        TabOrder = 0
+      end
+      object btnStartScanners: TButton
+        Left = 256
+        Height = 31
+        Top = 22
+        Width = 112
+        Caption = 'Read'
+        OnClick = btnStartScannersClick
+        ParentFont = False
+        TabOrder = 1
+      end
+      object seThreads: TSpinEdit
+        Left = 8
+        Height = 28
+        Top = 25
+        Width = 112
+        MaxValue = 10
+        MinValue = 1
+        ParentFont = False
+        TabOrder = 2
+        Value = 1
+      end
+      object pbLoader: TProgressBar
+        Left = 8
+        Height = 25
+        Top = 62
+        Width = 245
+        ParentFont = False
+        TabOrder = 3
+      end
+      object seThumbSize: TSpinEdit
+        Left = 141
+        Height = 28
+        Top = 25
+        Width = 112
+        MaxValue = 128
+        MinValue = 16
+        ParentFont = False
+        TabOrder = 4
+        Value = 48
+      end
+      object btnStopScanner: TButton
+        Left = 256
+        Height = 31
+        Top = 56
+        Width = 112
+        Caption = 'Abort'
+        OnClick = btnStopScannerClick
+        ParentFont = False
+        TabOrder = 5
+      end
+      object lbStatus: TLabel
+        Left = 8
+        Height = 20
+        Top = 88
+        Width = 53
+        Caption = 'lbStatus'
+        ParentColor = False
+        ParentFont = False
+      end
+      object Label1: TLabel
+        Left = 8
+        Height = 20
+        Top = 4
+        Width = 55
+        Caption = 'Threads:'
+        ParentColor = False
+        ParentFont = False
+      end
+      object Label2: TLabel
+        Left = 141
+        Height = 20
+        Top = 4
+        Width = 104
+        Caption = 'Thumbnail Size:'
+        ParentColor = False
+        ParentFont = False
+      end
+      object btnRecompare: TButton
+        Left = 256
+        Height = 31
+        Top = 120
+        Width = 112
+        Caption = 'Apply'
+        OnClick = btnRecompareClick
+        ParentFont = False
+        TabOrder = 6
+      end
+      object Label3: TLabel
+        Left = 8
+        Height = 20
+        Top = 160
+        Width = 68
+        Caption = 'Tolerance:'
+        ParentColor = False
+        ParentFont = False
+      end
+      object seTolerance: TSpinEdit
+        Left = 8
+        Height = 28
+        Top = 181
+        Width = 112
+        MaxValue = 16
+        ParentFont = False
+        TabOrder = 7
+        Value = 3
+      end
+      object seMinDimension: TSpinEdit
+        Left = 132
+        Height = 28
+        Top = 181
+        Width = 112
+        MaxValue = 2048
+        ParentFont = False
+        TabOrder = 8
+        Value = 128
+      end
+      object Label4: TLabel
+        Left = 132
+        Height = 20
+        Top = 160
+        Width = 59
+        Caption = 'Min Size:'
+        ParentColor = False
+        ParentFont = False
+      end
+    end
+  end
+  object Panel3: TPanel
+    Left = 404
+    Height = 522
+    Top = 218
+    Width = 784
+    Align = alClient
+    BevelOuter = bvNone
+    ClientHeight = 522
+    ClientWidth = 784
+    ParentFont = False
+    TabOrder = 1
+    object imHoverImage: TImage
+      Left = 0
+      Height = 502
+      Top = 0
+      Width = 784
+      Align = alClient
+      Proportional = True
+      Stretch = True
+    end
+    object lbHoverfile: TLabel
+      Left = 0
+      Height = 20
+      Top = 502
+      Width = 784
+      Align = alBottom
+      Caption = 'lbHoverfile'
+      ParentColor = False
+      ParentFont = False
+    end
+  end
+  object Panel4: TPanel
+    Left = 0
+    Height = 522
+    Top = 218
+    Width = 398
+    Align = alLeft
+    Caption = 'Panel4'
+    ClientHeight = 522
+    ClientWidth = 398
+    ParentFont = False
+    TabOrder = 2
+    object lbClusters: TListBox
+      Left = 1
+      Height = 402
+      Top = 1
+      Width = 396
+      Align = alClient
+      ItemHeight = 0
+      OnDrawItem = lbClustersDrawItem
+      OnMeasureItem = lbClustersMeasureItem
+      OnMouseDown = lbClustersMouseDown
+      OnMouseMove = lbClustersMouseMove
+      ParentFont = False
+      Style = lbOwnerDrawVariable
+      TabOrder = 0
+    end
+    object meLog: TMemo
+      Left = 1
+      Height = 86
+      Top = 435
+      Width = 396
+      Align = alBottom
+      Lines.Strings = (
+        'Memo1'
+      )
+      ParentFont = False
+      ScrollBars = ssAutoVertical
+      TabOrder = 1
+    end
+    object ToolBar1: TToolBar
+      Left = 1
+      Top = 403
+      Width = 396
+      Align = alBottom
+      ButtonHeight = 28
+      ButtonWidth = 50
+      Caption = 'ToolBar1'
+      Flat = False
+      ParentFont = False
+      ShowCaptions = True
+      TabOrder = 2
+      object tbAutoMark: TToolButton
+        Left = 1
+        Top = 2
+        Caption = 'AutoMark'
+        OnClick = tbAutoMarkClick
+      end
+      object tbUnMark: TToolButton
+        Left = 74
+        Top = 2
+        Caption = 'UnMark'
+        OnClick = tbUnMarkClick
+      end
+      object tbUnIgnore: TToolButton
+        Left = 133
+        Top = 2
+        Caption = 'UnIgnore'
+        OnClick = tbUnIgnoreClick
+      end
+      object ToolButton1: TToolButton
+        Left = 202
+        Height = 28
+        Top = 2
+        Caption = 'ToolButton1'
+        Style = tbsDivider
+      end
+      object tbMarkedTrash: TToolButton
+        Left = 207
+        Top = 2
+        Caption = 'Trash'
+        OnClick = tbMarkedTrashClick
+      end
+    end
+  end
+  object Splitter1: TSplitter
+    Left = 398
+    Height = 522
+    Top = 218
+    Width = 6
+  end
+  object ilMarks: TImageList
+    Left = 918
+    Top = 275
+    Bitmap = {
+      4C69020000001000000010000000008080000080800000808000008080000080
+      8000000000FF000000FF000000FF000000FF000000FF00808000008080000080
+      8000008080000080800000808000008080000080800000808000008080000080
+      8000000000FF7F7F7FFF7F7F7FFF7F7F7FFF000000FF00808000008080000080
+      80000080800000808000008080000080800000808000000000FF000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      00FF0080800000808000008080000080800000808000000000FFFFFFFFFFBFBF
+      BFFFBFBFBFFFBFBFBFFF7F7F7FFF7F7F7FFF7F7F7FFF7F7F7FFF7F7F7FFF0000
+      00FF0080800000808000008080000080800000808000000000FF000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      00FF008080000080800000808000008080000080800000808000000000FF7F7F
+      7FFF000000FF7F7F7FFF000000FF7F7F7FFF000000FF7F7F7FFF000000FF0080
+      8000008080000080800000808000008080000080800000808000000000FFFFFF
+      FFFF000000FFBFBFBFFF000000FF7F7F7FFF000000FF7F7F7FFF000000FF0080
+      80000080800000808000008080000080800000808000000000FF000000FFFFFF
+      FFFF000000FFBFBFBFFF000000FFBFBFBFFF000000FF7F7F7FFF000000FF0000
+      00FF00808000008080000080800000808000000000FF00808000000000FFFFFF
+      FFFF000000FFBFBFBFFF000000FF7F7F7FFF000000FF7F7F7FFF000000FF0080
+      8000000000FF0080800000808000008080000080800000808000000000FFFFFF
+      FFFF000000FFBFBFBFFF000000FFBFBFBFFF000000FF7F7F7FFF000000FF0080
+      8000008080000080800000808000008080000080800000808000000000FFFFFF
+      FFFF000000FFBFBFBFFF000000FF7F7F7FFF000000FF7F7F7FFF000000FF0080
+      8000008080000080800000808000008080000080800000808000000000FFFFFF
+      FFFF000000FFBFBFBFFF000000FFBFBFBFFF000000FF7F7F7FFF000000FF0080
+      8000008080000080800000808000008080000080800000808000000000FFFFFF
+      FFFF000000FFBFBFBFFF000000FF7F7F7FFF000000FF7F7F7FFF000000FF0080
+      8000008080000080800000808000008080000080800000808000000000FFFFFF
+      FFFF000000FFBFBFBFFF000000FFBFBFBFFF000000FF7F7F7FFF000000FF0080
+      8000008080000080800000808000008080000080800000808000000000FFFFFF
+      FFFF7F7F7FFF7F7F7FFF7F7F7FFF7F7F7FFF7F7F7FFF7F7F7FFF000000FF0080
+      8000008080000080800000808000008080000080800000808000000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0080
+      8000008080000080800000808000800080008000800080008000800080008000
+      800000FFFFFF00FFFFFF80008000800080008000800080008000800080008000
+      800080008000800080008000800080008000800080008000800000FFFFFF00FF
+      FFFF00FFFFFF000000FF000000FF800080008000800080008000800080008000
+      8000800080008000800080008000800080008000800000FFFFFF00FFFFFF00FF
+      FFFF000000FF000000FF80008000800080008000800080008000800080008000
+      80008000800080008000800080008000800000FFFFFF00FFFFFF00FFFFFF0000
+      00FF000000FF8000800080008000800080008000800080008000800080008000
+      80008000800080008000800080008000800000FFFFFF00FFFFFF00FFFFFF0000
+      00FF800080008000800080008000800080008000800080008000800080008000
+      800080008000800080008000800000FFFFFF00FFFFFF00FFFFFF00FFFFFF0000
+      00FF800080008000800080008000800080008000800080008000800080008000
+      800080008000800080008000800000FFFFFF00FFFFFF00FFFFFF00FFFFFF0000
+      00FF800080008000800080008000800080008000800080008000800080008000
+      800080008000800080008000800000FFFFFF00FFFFFF00FFFFFF00FFFFFF0000
+      00FF800080008000800080008000800080008000800080008000800080008000
+      800080008000800080008000800000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FF
+      FFFF800080008000800080008000800080008000800080008000800080008000
+      80008000800000FFFFFF8000800000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FF
+      FFFF00FFFFFF8000800080008000800080008000800080008000800080008000
+      800000FFFFFF00FFFFFF000000FF8000800000FFFFFF00FFFFFF00FFFFFF00FF
+      FFFF00FFFFFF00FFFFFF800080008000800080008000800080008000800000FF
+      FFFF00FFFFFF000000FF000000FF8000800000FFFFFF00FFFFFF00FFFFFF00FF
+      FFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FF
+      FFFF00FFFFFF000000FF80008000800080008000800000FFFFFF00FFFFFF00FF
+      FFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FF
+      FFFF000000FF000000FF8000800080008000800080008000800000FFFFFF00FF
+      FFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0000
+      00FF000000FF8000800080008000800080008000800080008000800080000000
+      00FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000000FF000000FF0000
+      00FF800080008000800080008000800080008000800080008000800080008000
+      800080008000000000FF000000FF000000FF000000FF000000FF800080008000
+      8000800080008000800080008000
+    }
+  end
+end

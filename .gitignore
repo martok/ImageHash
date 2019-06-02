@@ -1,0 +1,4 @@
+data*/*
+obj/*
+bin_*/*
+*.lps
