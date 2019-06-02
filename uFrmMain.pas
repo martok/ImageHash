@@ -1,4 +1,4 @@
-unit Unit1;
+unit uFrmMain;
 
 {$mode objfpc}{$H+}
 
@@ -104,12 +104,19 @@ begin
     tn:= ImageHandlers.TypeNames[i];
     ex:= StringReplace('*.' + ImageHandlers.Extensions[tn], ';', ';*.', [rfReplaceAll]);
     clbFilter.Items.Add('%s (%s)', [tn, ex]);
-    clbFilter.Checked[i]:= true;
+    if not Assigned(ImageHandlers.ImageReader[tn]) then
+      clbFilter.ItemEnabled[i]:= false
+    else
+      clbFilter.Checked[i]:= true;
   end;
 
   Caption:= Application.Title;
 
   seThreads.Value:= Max(1, TThread.ProcessorCount-1);
+
+  meLog.Clear;
+  lbHoverfile.Caption:= '';
+  lbStatus.Caption:= 'Waiting...';
 
   mePaths.Clear;
   mePaths.Lines.Add(ExpandFileName(ConcatPaths([ExtractFilePath(ParamStr(0)),'..\data'])));

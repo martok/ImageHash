@@ -34,7 +34,7 @@ implementation
 {$R *.lfm}
 
 uses
-  uThreadClassifier, Unit1, uThreadHashing, uUtils;
+  uThreadClassifier, uFrmMain, uThreadHashing, uUtils;
 
 const
   CompressedFileExtensions = '.jpeg.jpg.jpe.jfif.png.gif.tif.tiff';

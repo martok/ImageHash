@@ -9,7 +9,7 @@ object frmAutoMark: TfrmAutoMark
   ClientWidth = 303
   DesignTimePPI = 120
   Position = poScreenCenter
-  LCLVersion = '1.9.0.0'
+  LCLVersion = '2.1.0.0'
   object Label1: TLabel
     Left = 16
     Height = 20

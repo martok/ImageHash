@@ -14,7 +14,7 @@ uses
   Forms,
   {$IFDEF USE_JPEGTURBO}
   {$ENDIF}
-  Unit1, uImageHashing, uThreadScanner, uThreadHashing, uThreadClassifier,
+  uFrmMain, uImageHashing, uThreadScanner, uThreadHashing, uThreadClassifier,
   uUtils, uFrmAutoMark, FPReadJPEGTurbo;
 
 {$R *.res}
