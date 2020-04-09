@@ -5,7 +5,7 @@ program ImageHash;
 {$mode objfpc}{$H+}
 
 uses
-  //FastMM4,
+  FastMM4,
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
@@ -27,6 +27,7 @@ begin
   {$ifend}
 
   RequireDerivedFormResource:=True;
+  Application.MainFormOnTaskBar:=True;
   Application.Initialize;
   Application.CreateForm(TForm1, Form1);
   Application.CreateForm(TfrmAutoMark, frmAutoMark);
