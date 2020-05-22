@@ -13,20 +13,24 @@ function imgConvertCompatibleGrey(source: TLazIntfImage): TLazIntfImage;
 function imgScaleCompatible(source: TLazIntfImage; Width, Height: integer; Interpolation: TFPCustomInterpolation = nil): TLazIntfImage;
 function imgGetData(img: TLazIntfImage): PByte;
 
+const
+  HASH_BITS = bitsizeof(QWORD);
+  HASH_SIZE = Trunc(sqrt(HASH_BITS));
+
 type
-  TImageHash =  bitpacked array[0..32768-1] of boolean;
+  TImageHash =  bitpacked array[0..HASH_BITS-1] of boolean;
   PImageHash = ^TImageHash;
 
   PLazIntfImage = ^TLazIntfImage;
 
-procedure hashDHash(id: PByte; hash: PImageHash; hashsize: integer);
-procedure hashDHashSq3(id: PByte; hash00, hash90, hash180: PImageHash; hashsize: integer);
+procedure hashDHash(id: PByte; hash: PImageHash);
+procedure hashDHashSq3(id: PByte; hash00, hash90, hash180: PImageHash);
 
-procedure hashFromFileName(aFile: string; hashsize: integer; const hash00, hash90, hash180: PImageHash;
-     out hashbits: integer; thumbsize:integer=0; thumb: PLazIntfImage = nil;
+procedure hashFromFileName(aFile: string; const hash00, hash90, hash180: PImageHash;
+     thumbsize:integer=0; thumb: PLazIntfImage = nil;
      ImgW: PInteger = nil; ImgH: PInteger = nil);
 
-function hashToString(hash: PImageHash; hashbits: integer): string;
+function hashToString(hash: PImageHash): string;
 
 implementation
 
@@ -115,49 +119,49 @@ begin
   end;
 end;
 
-procedure imgDataRotate90R(source, dest: PByte; hashsize: integer);
+procedure imgDataRotate90R(source, dest: PByte);
 var
   py, px: Integer;
 begin
-  for py:= 0 to hashsize - 1 do
-    for px:= 0 to hashsize - 1 do begin
-      dest[px+py*hashsize]:= source[(hashsize-1-py)+px*hashsize];
+  for py:= 0 to HASH_SIZE - 1 do
+    for px:= 0 to HASH_SIZE - 1 do begin
+      dest[px+py*HASH_SIZE]:= source[(HASH_SIZE-1-py)+px*HASH_SIZE];
     end;
 end;
 
-procedure hashDHash(id: PByte; hash: PImageHash; hashsize: integer);
+procedure hashDHash(id: PByte; hash: PImageHash);
 var
   py, px: Integer;
 begin
-  for py:= 0 to hashsize - 1 do
-    for px:= 0 to hashsize - 1 do begin
-      hash^[px+py*hashsize]:= id[px+py*hashsize] < id[px+1+py*hashsize];
+  for py:= 0 to HASH_SIZE - 1 do
+    for px:= 0 to HASH_SIZE - 1 do begin
+      hash^[px+py*HASH_SIZE]:= id[px+py*HASH_SIZE] < id[px+1+py*HASH_SIZE];
     end;
 end;
 
-procedure hashDHashP(id: PByte; hash: PImageHash; hashsize: integer);
+procedure hashDHashP(id: PByte; hash: PImageHash);
 var
   py, px: Integer;
 begin
-  for py:= 0 to hashsize - 1 do
-    for px:= 0 to hashsize - 1 do begin
-      hash^[px+py*hashsize]:= id[px+py*hashsize] < id[(px+1) mod hashsize+py*hashsize];
+  for py:= 0 to HASH_SIZE - 1 do
+    for px:= 0 to HASH_SIZE - 1 do begin
+      hash^[px+py*HASH_SIZE]:= id[px+py*HASH_SIZE] < id[(px+1) mod HASH_SIZE+py*HASH_SIZE];
     end;
 end;
 
-procedure hashDHashSq3(id: PByte; hash00, hash90, hash180: PImageHash; hashsize: integer);
+procedure hashDHashSq3(id: PByte; hash00, hash90, hash180: PImageHash);
 var
   id1, id2: PByte;
 begin
-  hashDHashP(id, hash00, hashsize);
-  GetMem(id1, hashsize*hashsize);
-  GetMem(id2, hashsize*hashsize);
+  hashDHashP(id, hash00);
+  GetMem(id1, HASH_SIZE*HASH_SIZE);
+  GetMem(id2, HASH_SIZE*HASH_SIZE);
   try
-    imgDataRotate90R(id, id1, hashsize); 
-    hashDHashP(id1, hash90, hashsize);
+    imgDataRotate90R(id, id1);
+    hashDHashP(id1, hash90);
 
-    imgDataRotate90R(id1, id2, hashsize); 
-    hashDHashP(id2, hash180, hashsize);
+    imgDataRotate90R(id1, id2);
+    hashDHashP(id2, hash180);
   finally
     Freemem(id1);
     Freemem(id2);
@@ -171,8 +175,7 @@ begin
   Result:= (Lookup[b and $f] shl 4) or Lookup[b shr 4];
 end;
 
-procedure hashFromFileName(aFile: string; hashsize: integer; const hash00,
-  hash90, hash180: PImageHash; out hashbits: integer; thumbsize: integer;
+procedure hashFromFileName(aFile: string; const hash00, hash90, hash180: PImageHash; thumbsize: integer;
   thumb: PLazIntfImage; ImgW: PInteger; ImgH: PInteger);
 var
   source, inter, scale, grey: TLazIntfImage;
@@ -181,18 +184,17 @@ var
   FreeInter: Boolean;
 begin
   FreeInter:= false;
-  hashbits:= hashsize * hashsize;
 
   source:= imgLoadFromFile(aFile);
   // decimate to something useful first
-  fac:= Max(1,Min(source.Width, source.Height)) / (hashsize*64);
+  fac:= Max(1,Min(source.Width, source.Height)) / (HASH_SIZE*64);
   if fac > 1 then begin
     inter:= imgScaleCompatible(source, trunc(source.Width/fac), trunc(source.Height/fac), TFPBoxInterpolation.Create);
     FreeInter:= true;
   end
   else
     inter:= source;
-  scale:= imgScaleCompatible(inter, hashsize, hashsize, TMitchelInterpolation.Create);
+  scale:= imgScaleCompatible(inter, HASH_SIZE, HASH_SIZE, TMitchelInterpolation.Create);
   grey:= imgConvertCompatibleGrey(scale);
 
   if thumbsize>0 then begin
@@ -208,7 +210,7 @@ begin
 
   id:= imgGetData(grey);
 
-  hashDHashSq3(id, hash00, hash90, hash180, hashsize);
+  hashDHashSq3(id, hash00, hash90, hash180);
   Freemem(id);
 
   if FreeInter then
@@ -218,15 +220,15 @@ begin
   FreeAndNil(source);
 end;
 
-function hashToString(hash: PImageHash; hashbits: integer): string;
+function hashToString(hash: PImageHash): string;
 const
   HexTbl : array[0..15] of char='0123456789ABCDEF';
 var
   i: Integer;
   b: Byte;
 begin
-  SetLength(Result{%H-}, hashbits div 8 * 2);
-  for i:= 0 to hashbits div 8 - 1 do begin
+  SetLength(Result{%H-}, HASH_BITS div 8 * 2);
+  for i:= 0 to HASH_BITS div 8 - 1 do begin
     b:= BitReverse(PByte(hash)[i]);
     //b:= PBYTE(hash)[i];
     Result[1+i*2  ]:= HexTbl[b shr 4];

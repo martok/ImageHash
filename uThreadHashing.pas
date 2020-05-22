@@ -110,7 +110,7 @@ end;
 
 procedure TImageHashThread.Execute;
 var
-  cursor, hbits: integer;
+  cursor: integer;
   im: PImageInfoItem;
   fn: String;
 begin
@@ -121,7 +121,7 @@ begin
       im:= @fList[Cursor];
       fn:= IncludeTrailingPathDelimiter(fPrefixes[im^.Sourcedir]) + im^.Filename;
       try
-        hashFromFileName(fn, sizeof(QWord), @im^.Hash00, @im^.Hash90, @im^.Hash180, hbits, fThumbSize, @im^.thumbnail, @im^.ImgW, @im^.ImgH);
+        hashFromFileName(fn, @im^.Hash00, @im^.Hash90, @im^.Hash180, fThumbSize, @im^.thumbnail, @im^.ImgW, @im^.ImgH);
       except
         // ignore for now, and keep "working" mark on it unless this is second pass
         on e: EOutOfMemory do begin
