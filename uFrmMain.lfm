@@ -7,10 +7,9 @@ object Form1: TForm1
   ClientHeight = 740
   ClientWidth = 1188
   DesignTimePPI = 120
+  Position = poDefaultPosOnly
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  Position = poDefaultPosOnly
-  LCLVersion = '2.3.0.0'
   object Panel1: TPanel
     Left = 0
     Height = 218
@@ -64,9 +63,9 @@ object Form1: TForm1
         Top = 22
         Width = 112
         Caption = 'Read'
-        OnClick = btnStartScannersClick
         ParentFont = False
         TabOrder = 2
+        OnClick = btnStartScannersClick
       end
       object seThreads: TSpinEdit
         Left = 8
@@ -104,9 +103,9 @@ object Form1: TForm1
         Top = 56
         Width = 112
         Caption = 'Abort'
-        OnClick = btnStopScannerClick
         ParentFont = False
         TabOrder = 4
+        OnClick = btnStopScannerClick
       end
       object lbStatus: TLabel
         Left = 8
@@ -138,15 +137,15 @@ object Form1: TForm1
         Top = 120
         Width = 112
         Caption = 'Apply'
-        OnClick = btnRecompareClick
         ParentFont = False
         TabOrder = 6
+        OnClick = btnRecompareClick
       end
       object Label3: TLabel
         Left = 8
         Height = 20
         Top = 160
-        Width = 68
+        Width = 67
         Caption = 'Tolerance:'
         ParentFont = False
       end
@@ -198,16 +197,16 @@ object Form1: TForm1
         Lines.Strings = (
           'mePaths'
         )
+        ParentFont = False
+        ScrollBars = ssAutoBoth
+        TabOrder = 0
+        WordWrap = False
         OnChange = mePathsChange
         OnClick = mePathsChange
         OnEnter = mePathsChange
         OnKeyPress = mePathsKeyPress
         OnKeyUp = mePathsKeyUp
         OnMouseUp = mePathsMouseUp
-        ParentFont = False
-        ScrollBars = ssAutoBoth
-        TabOrder = 0
-        WordWrap = False
       end
       object dePaths: TDirectoryEdit
         Left = 0
@@ -274,13 +273,13 @@ object Form1: TForm1
       Width = 396
       Align = alClient
       ItemHeight = 0
+      ParentFont = False
+      Style = lbOwnerDrawVariable
+      TabOrder = 0
       OnDrawItem = lbClustersDrawItem
       OnMeasureItem = lbClustersMeasureItem
       OnMouseDown = lbClustersMouseDown
       OnMouseMove = lbClustersMouseMove
-      ParentFont = False
-      Style = lbOwnerDrawVariable
-      TabOrder = 0
     end
     object meLog: TMemo
       Left = 1
@@ -314,26 +313,26 @@ object Form1: TForm1
         OnClick = tbAutoMarkClick
       end
       object tbUnMark: TToolButton
-        Left = 74
+        Left = 75
         Top = 2
         Caption = 'UnMark'
         OnClick = tbUnMarkClick
       end
       object tbUnIgnore: TToolButton
-        Left = 133
+        Left = 135
         Top = 2
         Caption = 'UnIgnore'
         OnClick = tbUnIgnoreClick
       end
       object ToolButton1: TToolButton
-        Left = 202
+        Left = 205
         Height = 28
         Top = 2
         Caption = 'ToolButton1'
         Style = tbsDivider
       end
       object tbMarkedTrash: TToolButton
-        Left = 207
+        Left = 210
         Top = 2
         Caption = 'Trash'
         OnClick = tbMarkedTrashClick

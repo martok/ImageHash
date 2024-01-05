@@ -76,6 +76,7 @@ type
     fAbortFlag: boolean;
     procedure FreeData;
     procedure FreeClassifier;
+    function GetCheckedFilters: string;
     procedure ImageLoadFinished;
     procedure ImageClassifierFinished;
     function ImageAtXY(X, Y: integer; out ICluster, IImage: integer): boolean;
@@ -202,11 +203,26 @@ begin
   lbClusters.Clear;
 end;
 
+function TForm1.GetCheckedFilters: string;
+var
+  i: Integer;
+  ex: String;
+begin
+  Result:= '';
+  for i:= 0 to clbFilter.Count-1 do begin
+    if clbFilter.Checked[i] then begin
+      ex:= StringReplace('*.' + ImageHandlers.Extensions[ImageHandlers.TypeNames[i]], ';', ';*.', [rfReplaceAll]);
+      Result += ex + ';';
+    end;
+  end;
+  SetLength(Result, Length(Result)-1);
+end;
+
 procedure TForm1.btnStartScannersClick(Sender: TObject);
 var
   scanners: array of TFileScannerThread;
   i, j, k: Integer;
-  filter, ex: String;
+  filter: String;
   loaders: array of TImageHashThread;
   t1,t2: Int64;
   loadermemerror: Boolean;
@@ -220,14 +236,7 @@ begin
   mePaths.Enabled:= false;
   try
     fAbortFlag:= false;
-    filter:= '';
-    for i:= 0 to clbFilter.Count-1 do begin
-      if clbFilter.Checked[i] then begin
-        ex:= StringReplace('*.' + ImageHandlers.Extensions[ImageHandlers.TypeNames[i]], ';', ';*.', [rfReplaceAll]);
-        filter += ex + ';';
-      end;
-    end;
-    SetLength(Filter, Length(Filter)-1);
+    filter:= GetCheckedFilters;
 
     lbStatus.Caption:= 'Creating file list...';
     SetLength(scanners, mePaths.Lines.Count);
@@ -257,11 +266,13 @@ begin
     pbLoader.Position:= 0;
     pbLoader.Max:= length(fImageInfos);
 
-    lbStatus.Caption:= 'Setup classifier...';
-    SetLength(loaders, seThreads.Value);
     t1:= GetTickCount64;
+
+    lbStatus.Caption:= 'Setup classifier...';
     btnRecompare.Click;
+
     lbStatus.Caption:= 'Setup loader...';
+    SetLength(loaders, seThreads.Value);
     for i:= 0 to High(loaders) do begin
       loaders[i]:= TImageHashThread.Create;
       loaders[i].Prefixes:= mePaths.Lines;
@@ -277,6 +288,8 @@ begin
       loadermemerror:= loadermemerror or loaders[i].SawMemoryError;
       loaders[i].Free;
     end;
+    SetLength(loaders, 0);
+
     if loadermemerror then begin
       meLog.Lines.Add('- had EOutOfMemory, rerunning errors single-threaded');
       // reflag all that are still at "working" - threads are finished, they are all SawMemoryError cases
@@ -295,6 +308,7 @@ begin
     end;
     WaitForMultipleThreads(@loaders[0], length(loaders), @Application.ProcessMessages, @fAbortFlag);
     WaitForMultipleThreads(@fClassifier, 1, @Application.ProcessMessages, @fAbortFlag);
+
     t2:= GetTickCount64;
     meLog.Lines.Add('time:  %dms',[t2-t1]);
     meLog.Lines.Add('clusters: %d',[fClassifier.Clusters.Count]);
