@@ -49,6 +49,9 @@ begin
       Sleep(1);
     until a[i].Finished;
   end;
+  // Make sure any queued events are processed before returning to where the threads may be freed
+  if GetCurrentThreadId = MainThreadID then
+    CheckSynchronize();
 end;
 
 { TListTool }

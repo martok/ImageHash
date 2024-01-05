@@ -83,6 +83,7 @@ procedure TImageInfoItem.Done;
 begin
   FreeAndNil(Thumbnail);
   Filename:= '';
+  Error:= '';
 end;
 
 function TImageInfoItem.FullName(Dirs: TStrings): String;
@@ -110,35 +111,44 @@ end;
 
 procedure TImageHashThread.Execute;
 var
-  cursor: integer;
+  prefPaths: array of String;
+  cursor, i: integer;
   im: PImageInfoItem;
   fn: String;
 begin
-  cursor:= 0;
-  while not Terminated and (cursor < fCount) do begin
-    if InterlockedCompareExchange(fList[cursor].Status, STATUS_WORKING, STATUS_NONE) = STATUS_NONE then begin
-      // we got this item, work on it
-      im:= @fList[Cursor];
-      fn:= IncludeTrailingPathDelimiter(fPrefixes[im^.Sourcedir]) + im^.Filename;
-      try
-        hashFromFileName(fn, @im^.Hash00, @im^.Hash90, @im^.Hash180, fThumbSize, @im^.thumbnail, @im^.ImgW, @im^.ImgH);
-      except
-        // ignore for now, and keep "working" mark on it unless this is second pass
-        on e: EOutOfMemory do begin
-          fSawMemoryError:= true;
-          if not fFinalMemoryError then
-            continue;
-        end;
-        // eat exception, but keep note of it
-        on e: Exception do
-          im^.Error:= e.Message;
-      end;
-      InterLockedExchange(im^.Status, STATUS_DONE);
-      if Assigned(fImageFinishEvent) then
-        Queue(fImageFinishEvent);
-    end else
+  SetLength(prefPaths{%H-}, fPrefixes.Count);
+  for i:= 0 to high(prefPaths) do
+    prefPaths[i]:= IncludeTrailingPathDelimiter(fPrefixes[i]);
+
+  for cursor:= 0 to fCount - 1 do begin
+    if Terminated then
+      Break;
+
+    im:= @fList[Cursor];
+    if InterlockedCompareExchange(im^.Status, STATUS_WORKING, STATUS_NONE) <> STATUS_NONE then
       // another thread either is working on it or already finished
-      inc(cursor);
+      continue;
+
+    // we got this item, work on it
+    fn:= prefPaths[im^.Sourcedir] + im^.Filename;
+    try
+      hashFromFileName(fn, @im^.Hash00, @im^.Hash90, @im^.Hash180, fThumbSize, @im^.thumbnail, @im^.ImgW, @im^.ImgH);
+    except
+      // ignore for now, and keep "working" mark on it unless this is second pass
+      on e: EOutOfMemory do begin
+        fSawMemoryError:= true;
+        if not fFinalMemoryError then
+          continue;
+      end;
+      // eat exception, but keep note of it
+      on e: Exception do
+        im^.Error:= e.Message;
+    end;
+
+    // Don't need interlocked here, we already hold the lock
+    im^.Status:= STATUS_DONE;
+    if Assigned(fImageFinishEvent) then
+      Queue(fImageFinishEvent);
   end;
 end;
 
