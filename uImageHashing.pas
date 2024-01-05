@@ -11,14 +11,15 @@ uses
 function imgLoadFromFile(aFile: string): TLazIntfImage;
 function imgConvertCompatibleGrey(source: TLazIntfImage): TLazIntfImage;
 function imgScaleCompatible(source: TLazIntfImage; Width, Height: integer; Interpolation: TFPCustomInterpolation = nil): TLazIntfImage;
-function imgGetData(img: TLazIntfImage): PByte;
+procedure imgGetData(img: TLazIntfImage; dest: PByte);
 
 const
   HASH_BITS = bitsizeof(QWORD);
   HASH_SIZE = Trunc(sqrt(HASH_BITS));
 
 type
-  TImageHash =  bitpacked array[0..HASH_BITS-1] of boolean;
+  TImageData = packed array [0..(HASH_SIZE*HASH_SIZE)-1] of Byte;
+  TImageHash = bitpacked array[0..HASH_BITS-1] of boolean;
   PImageHash = ^TImageHash;
 
   PLazIntfImage = ^TLazIntfImage;
@@ -105,16 +106,15 @@ begin
   end;
 end;
 
-function imgGetData(img: TLazIntfImage): PByte;
+procedure imgGetData(img: TLazIntfImage; dest: PByte);
 var
   py, px: Integer;
   lsource: PRGBTriple;
 begin
-  GetMem(Result, img.Width*img.Height);
   for py:=0 to img.Height-1 do begin
     lsource := img.GetDataLineStart(py);
     for px:=0 to img.Width-1 do begin
-      Result[px+py*img.Width]:= lsource[px].rgbtRed;
+      dest[px+py*img.Width]:= lsource[px].rgbtRed;
     end;
   end;
 end;
@@ -141,31 +141,28 @@ end;
 
 procedure hashDHashP(id: PByte; hash: PImageHash);
 var
-  py, px: Integer;
+  py, px,
+  k, kright: Integer;
 begin
   for py:= 0 to HASH_SIZE - 1 do
     for px:= 0 to HASH_SIZE - 1 do begin
-      hash^[px+py*HASH_SIZE]:= id[px+py*HASH_SIZE] < id[(px+1) mod HASH_SIZE+py*HASH_SIZE];
+      // the local vars are important for correct x86_64 codegen
+      k:= px+py*HASH_SIZE;
+      kright:= (px+1) mod HASH_SIZE+py*HASH_SIZE;
+      hash^[k]:= id[k] < id[kright];
     end;
 end;
 
 procedure hashDHashSq3(id: PByte; hash00, hash90, hash180: PImageHash);
 var
-  id1, id2: PByte;
+  id1, id2: TImageData;
 begin
   hashDHashP(id, hash00);
-  GetMem(id1, HASH_SIZE*HASH_SIZE);
-  GetMem(id2, HASH_SIZE*HASH_SIZE);
-  try
-    imgDataRotate90R(id, id1);
-    hashDHashP(id1, hash90);
+  imgDataRotate90R(id, @id1);
+  hashDHashP(@id1, hash90);
 
-    imgDataRotate90R(id1, id2);
-    hashDHashP(id2, hash180);
-  finally
-    Freemem(id1);
-    Freemem(id2);
-  end;
+  imgDataRotate90R(@id1, @id2);
+  hashDHashP(@id2, hash180);
 end;
 
 function BitReverse(b: Byte): Byte;
@@ -180,7 +177,7 @@ procedure hashFromFileName(aFile: string; const hash00, hash90, hash180: PImageH
 var
   source, inter, scale, grey: TLazIntfImage;
   fac: Single;
-  id: PByte;
+  id: TImageData;
   FreeInter: Boolean;
 begin
   FreeInter:= false;
@@ -208,10 +205,8 @@ begin
     ImgH^:= source.Height;
   end;
 
-  id:= imgGetData(grey);
-
+  imgGetData(grey, @id);
   hashDHashSq3(id, hash00, hash90, hash180);
-  Freemem(id);
 
   if FreeInter then
     FreeAndNil(inter);

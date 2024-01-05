@@ -25,7 +25,7 @@ type
     function FullName(Dirs: TStrings): String;
   end;
 
-  TImageInfoList = array of TImageInfoItem;
+  TImageInfoList = packed array of TImageInfoItem;
 
   PImageInfoList = ^TImageInfoItem;
 
