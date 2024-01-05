@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, GraphType, CheckLst, Spin, ComCtrls, uThreadHashing, uThreadClassifier, Types;
+  ExtCtrls, GraphType, CheckLst, Spin, ComCtrls, EditBtn, uThreadHashing, uThreadClassifier, Types;
 
 type
 
@@ -15,7 +15,6 @@ type
   TForm1 = class(TForm)
     Panel1: TPanel;
     clbFilter: TCheckListBox;
-    mePaths: TMemo;
     Panel2: TPanel;
     pbClassifier: TProgressBar;
     btnStartScanners: TButton;
@@ -46,6 +45,9 @@ type
     tbUnIgnore: TToolButton;
     ToolButton1: TToolButton;
     tbMarkedTrash: TToolButton;
+    Panel5: TPanel;
+    mePaths: TMemo;
+    dePaths: TDirectoryEdit;
     procedure FormCreate(Sender: TObject);
     procedure btnStartScannersClick(Sender: TObject);
     procedure lbClustersDrawItem(Control: TWinControl; Index: Integer;
@@ -63,6 +65,11 @@ type
     procedure tbUnMarkClick(Sender: TObject);
     procedure tbUnIgnoreClick(Sender: TObject);
     procedure tbMarkedTrashClick(Sender: TObject);
+    procedure mePathsChange(Sender: TObject);
+    procedure mePathsKeyPress(Sender: TObject; var Key: char);
+    procedure mePathsMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure dePathsAcceptDirectory(Sender: TObject; var Value: String);
+    procedure mePathsKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     fClassifier: TClassifierThread;
     fImageInfos: TImageInfoList;
@@ -120,6 +127,7 @@ begin
 
   mePaths.Clear;
   mePaths.Lines.Add(ExpandFileName(ConcatPaths([ExtractFilePath(ParamStr(0)),'..\data'])));
+  mePathsChange(Self);
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
@@ -562,6 +570,47 @@ begin
     FreeAndNil(marked);
   end;
   btnRecompare.Click;
+end;
+
+procedure TForm1.mePathsChange(Sender: TObject);
+var
+  i: LongInt;
+  l: String;
+begin
+  i:= mePaths.CaretPos.Y;
+  if (i>=0) and (i<mePaths.Lines.Count) then begin
+    l:= mePaths.Lines[i];
+    dePaths.Directory:= l;
+  end else
+    dePaths.Directory:= '';
+end;
+
+procedure TForm1.mePathsKeyPress(Sender: TObject; var Key: char);
+begin
+  mePathsChange(Sender);
+end;
+
+procedure TForm1.mePathsMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  mePathsChange(Sender);
+end;
+
+procedure TForm1.mePathsKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  mePathsChange(Sender);
+end;
+
+procedure TForm1.dePathsAcceptDirectory(Sender: TObject; var Value: String);
+var
+  l: String;
+  c: TPoint;
+begin
+  c:= mePaths.CaretPos;
+  if (c.y>=0) and (c.y<mePaths.Lines.Count) then
+    mePaths.Lines[c.y]:= Value
+  else
+    mePaths.Lines.Add(Value);
+  mePaths.CaretPos:= c;
 end;
 
 end.
