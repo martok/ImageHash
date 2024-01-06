@@ -1,349 +1,505 @@
 object Form1: TForm1
   Left = 341
-  Height = 740
+  Height = 628
   Top = 186
-  Width = 1188
+  Width = 1131
   Caption = 'Form1'
-  ClientHeight = 740
-  ClientWidth = 1188
+  ClientHeight = 628
+  ClientWidth = 1131
   DesignTimePPI = 120
   Position = poDefaultPosOnly
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  object Panel1: TPanel
+  object pcSidebar: TPageControl
     Left = 0
-    Height = 218
+    Height = 628
     Top = 0
-    Width = 1188
-    Align = alTop
-    BevelOuter = bvNone
-    ClientHeight = 218
-    ClientWidth = 1188
-    ParentFont = False
-    TabOrder = 0
-    object clbFilter: TCheckListBox
-      Left = 0
-      Height = 218
-      Top = 0
-      Width = 285
-      Align = alLeft
-      ItemHeight = 0
-      ParentFont = False
-      TabOrder = 0
-    end
-    object Panel2: TPanel
-      Left = 812
-      Height = 218
-      Top = 0
-      Width = 376
-      Align = alRight
-      ClientHeight = 218
-      ClientWidth = 376
-      ParentFont = False
-      TabOrder = 2
-      object Bevel1: TBevel
-        Left = 1
-        Height = 112
-        Top = 1
-        Width = 374
-        Align = alTop
-        Shape = bsBottomLine
-      end
-      object pbClassifier: TProgressBar
-        Left = 8
-        Height = 25
-        Top = 126
-        Width = 245
-        ParentFont = False
-        TabOrder = 5
-      end
-      object btnStartScanners: TButton
-        Left = 256
-        Height = 31
-        Top = 22
-        Width = 112
-        Caption = 'Read'
-        ParentFont = False
-        TabOrder = 2
-        OnClick = btnStartScannersClick
-      end
-      object seThreads: TSpinEdit
-        Left = 8
-        Height = 28
-        Top = 25
-        Width = 112
-        MaxValue = 10
-        MinValue = 1
-        ParentFont = False
-        TabOrder = 0
-        Value = 1
-      end
-      object pbLoader: TProgressBar
-        Left = 8
-        Height = 25
-        Top = 62
-        Width = 245
-        ParentFont = False
-        TabOrder = 3
-      end
-      object seThumbSize: TSpinEdit
-        Left = 141
-        Height = 28
-        Top = 25
-        Width = 112
-        MaxValue = 128
-        MinValue = 16
-        ParentFont = False
-        TabOrder = 1
-        Value = 48
-      end
-      object btnStopScanner: TButton
-        Left = 256
-        Height = 31
-        Top = 56
-        Width = 112
-        Caption = 'Abort'
-        ParentFont = False
-        TabOrder = 4
-        OnClick = btnStopScannerClick
-      end
-      object lbStatus: TLabel
-        Left = 8
-        Height = 20
-        Top = 88
-        Width = 53
-        Caption = 'lbStatus'
-        ParentFont = False
-      end
-      object Label1: TLabel
-        Left = 8
-        Height = 20
-        Top = 4
-        Width = 55
-        Caption = 'Threads:'
-        ParentFont = False
-      end
-      object Label2: TLabel
-        Left = 141
-        Height = 20
-        Top = 4
-        Width = 104
-        Caption = 'Thumbnail Size:'
-        ParentFont = False
-      end
-      object btnRecompare: TButton
-        Left = 256
-        Height = 31
-        Top = 120
-        Width = 112
-        Caption = 'Apply'
-        ParentFont = False
-        TabOrder = 6
-        OnClick = btnRecompareClick
-      end
-      object Label3: TLabel
-        Left = 8
-        Height = 20
-        Top = 160
-        Width = 67
-        Caption = 'Tolerance:'
-        ParentFont = False
-      end
-      object seTolerance: TSpinEdit
-        Left = 8
-        Height = 28
-        Top = 181
-        Width = 112
-        MaxValue = 16
-        ParentFont = False
-        TabOrder = 7
-        Value = 3
-      end
-      object seMinDimension: TSpinEdit
-        Left = 132
-        Height = 28
-        Top = 181
-        Width = 112
-        MaxValue = 2048
-        ParentFont = False
-        TabOrder = 8
-        Value = 128
-      end
-      object Label4: TLabel
-        Left = 132
-        Height = 20
-        Top = 160
-        Width = 59
-        Caption = 'Min Size:'
-        ParentFont = False
-      end
-    end
-    object Panel5: TPanel
-      Left = 285
-      Height = 218
-      Top = 0
-      Width = 527
-      Align = alClient
-      BevelOuter = bvNone
-      ClientHeight = 218
-      ClientWidth = 527
-      TabOrder = 1
-      object mePaths: TMemo
+    Width = 362
+    ActivePage = tsScanSetup
+    Align = alLeft
+    TabIndex = 0
+    TabOrder = 2
+    TabPosition = tpLeft
+    TabWidth = 150
+    object tsScanSetup: TTabSheet
+      Caption = 'Setup'
+      ClientHeight = 620
+      ClientWidth = 328
+      object GroupBox2: TGroupBox
         Left = 0
-        Height = 190
+        Height = 88
         Top = 0
-        Width = 527
+        Width = 328
+        Align = alTop
+        Caption = 'Scan Settings'
+        ClientHeight = 63
+        ClientWidth = 324
+        TabOrder = 2
+        object GridLayoutPanel1: TGridLayoutPanel
+          Left = 0
+          Height = 63
+          Top = 0
+          Width = 324
+          LayoutOptions.ExpandRowMode = geFair
+          Align = alClient
+          ChildSizing.HorizontalSpacing = 8
+          ClientHeight = 63
+          ClientWidth = 324
+          TabOrder = 0
+          object Label1: TLabel
+            Left = 0
+            Height = 20
+            Top = 3
+            Width = 55
+            Alignment = taRightJustify
+            BorderSpacing.CellAlignVertical = ccaCenter
+            Caption = 'Threads:'
+            ParentFont = False
+          end
+          object seThreads: TSpinEdit
+            Left = 0
+            Height = 28
+            Top = 27
+            Width = 130
+            Constraints.MinWidth = 130
+            MaxValue = 10
+            MinValue = 1
+            ParentFont = False
+            TabOrder = 0
+            Value = 1
+          end
+          object Label2: TLabel
+            Left = 138
+            Height = 20
+            Top = 3
+            Width = 104
+            Alignment = taRightJustify
+            BorderSpacing.CellAlignVertical = ccaCenter
+            Caption = 'Thumbnail Size:'
+            ParentFont = False
+          end
+          object seThumbSize: TSpinEdit
+            Left = 138
+            Height = 28
+            Top = 27
+            Width = 130
+            Constraints.MinWidth = 130
+            MaxValue = 128
+            MinValue = 16
+            ParentFont = False
+            TabOrder = 1
+            Value = 48
+          end
+        end
+      end
+      object Panel5: TGroupBox
+        Left = 0
+        Height = 395
+        Top = 88
+        Width = 328
         Align = alClient
+        Caption = 'Scan Paths'
+        ClientHeight = 370
+        ClientWidth = 324
+        TabOrder = 1
+        object mePaths: TMemo
+          Left = 0
+          Height = 342
+          Top = 0
+          Width = 324
+          Align = alClient
+          Lines.Strings = (
+            'mePaths'
+          )
+          ParentFont = False
+          ScrollBars = ssAutoBoth
+          TabOrder = 0
+          WordWrap = False
+          OnChange = mePathsChange
+          OnClick = mePathsChange
+          OnEnter = mePathsChange
+          OnKeyPress = mePathsKeyPress
+          OnKeyUp = mePathsKeyUp
+          OnMouseUp = mePathsMouseUp
+        end
+        object dePaths: TDirectoryEdit
+          Left = 0
+          Height = 28
+          Top = 342
+          Width = 324
+          Directory = 'dePaths'
+          OnAcceptDirectory = dePathsAcceptDirectory
+          ShowHidden = False
+          ButtonWidth = 29
+          NumGlyphs = 1
+          Align = alBottom
+          MaxLength = 0
+          TabOrder = 1
+          Text = 'dePaths'
+        end
+      end
+      object GroupBox1: TGroupBox
+        Left = 0
+        Height = 131
+        Top = 489
+        Width = 328
+        Align = alBottom
+        Caption = 'Image Type Filter'
+        ClientHeight = 106
+        ClientWidth = 324
+        TabOrder = 0
+        object clbFilter: TCheckListBox
+          Left = 0
+          Height = 106
+          Top = 0
+          Width = 324
+          Align = alClient
+          ItemHeight = 0
+          ParentFont = False
+          TabOrder = 0
+        end
+      end
+      object Splitter2: TSplitter
+        Cursor = crVSplit
+        Left = 0
+        Height = 6
+        Top = 483
+        Width = 328
+        Align = alBottom
+        ResizeAnchor = akBottom
+      end
+    end
+    object tsScanResults: TTabSheet
+      Caption = 'Results'
+      ClientHeight = 620
+      ClientWidth = 328
+      object lbClusters: TListBox
+        Left = 0
+        Height = 496
+        Top = 32
+        Width = 328
+        Align = alClient
+        ItemHeight = 0
+        ParentFont = False
+        Style = lbOwnerDrawVariable
+        TabOrder = 0
+        OnDrawItem = lbClustersDrawItem
+        OnMeasureItem = lbClustersMeasureItem
+        OnMouseDown = lbClustersMouseDown
+        OnMouseMove = lbClustersMouseMove
+      end
+      object ToolBar1: TToolBar
+        Left = 0
+        Top = 0
+        Width = 328
+        ButtonHeight = 28
+        ButtonWidth = 50
+        Caption = 'ToolBar1'
+        EdgeBorders = []
+        Flat = False
+        ShowCaptions = True
+        TabOrder = 1
+        object tbAutoMark: TToolButton
+          Left = 1
+          Top = 0
+          Caption = 'AutoMark'
+          OnClick = tbAutoMarkClick
+        end
+        object tbUnMark: TToolButton
+          Left = 75
+          Top = 0
+          Caption = 'UnMark'
+          OnClick = tbUnMarkClick
+        end
+        object tbUnIgnore: TToolButton
+          Left = 135
+          Top = 0
+          Caption = 'UnIgnore'
+          OnClick = tbUnIgnoreClick
+        end
+        object ToolButton1: TToolButton
+          Left = 205
+          Height = 28
+          Top = 0
+          Caption = 'ToolButton1'
+          Style = tbsDivider
+        end
+        object tbMarkedTrash: TToolButton
+          Left = 210
+          Top = 0
+          Caption = 'Trash'
+          OnClick = tbMarkedTrashClick
+        end
+      end
+      object Splitter3: TSplitter
+        Cursor = crVSplit
+        Left = 0
+        Height = 6
+        Top = 528
+        Width = 328
+        Align = alBottom
+        ResizeAnchor = akBottom
+      end
+      object meLog: TMemo
+        Left = 0
+        Height = 86
+        Top = 534
+        Width = 328
+        Align = alBottom
         Lines.Strings = (
-          'mePaths'
+          'Memo1'
         )
         ParentFont = False
-        ScrollBars = ssAutoBoth
-        TabOrder = 0
-        WordWrap = False
-        OnChange = mePathsChange
-        OnClick = mePathsChange
-        OnEnter = mePathsChange
-        OnKeyPress = mePathsKeyPress
-        OnKeyUp = mePathsKeyUp
-        OnMouseUp = mePathsMouseUp
-      end
-      object dePaths: TDirectoryEdit
-        Left = 0
-        Height = 28
-        Top = 190
-        Width = 527
-        Directory = 'dePaths'
-        OnAcceptDirectory = dePathsAcceptDirectory
-        ShowHidden = False
-        ButtonWidth = 29
-        NumGlyphs = 1
-        Align = alBottom
-        MaxLength = 0
-        TabOrder = 1
-        Text = 'dePaths'
-      end
-    end
-  end
-  object Panel3: TPanel
-    Left = 404
-    Height = 522
-    Top = 218
-    Width = 784
-    Align = alClient
-    BevelOuter = bvNone
-    ClientHeight = 522
-    ClientWidth = 784
-    ParentFont = False
-    TabOrder = 3
-    object imHoverImage: TImage
-      Left = 0
-      Height = 502
-      Top = 0
-      Width = 784
-      Align = alClient
-      Proportional = True
-      Stretch = True
-    end
-    object lbHoverfile: TLabel
-      Left = 0
-      Height = 20
-      Top = 502
-      Width = 784
-      Align = alBottom
-      Caption = 'lbHoverfile'
-      ParentFont = False
-    end
-  end
-  object Panel4: TPanel
-    Left = 0
-    Height = 522
-    Top = 218
-    Width = 398
-    Align = alLeft
-    Caption = 'Panel4'
-    ClientHeight = 522
-    ClientWidth = 398
-    ParentFont = False
-    TabOrder = 1
-    object lbClusters: TListBox
-      Left = 1
-      Height = 402
-      Top = 1
-      Width = 396
-      Align = alClient
-      ItemHeight = 0
-      ParentFont = False
-      Style = lbOwnerDrawVariable
-      TabOrder = 0
-      OnDrawItem = lbClustersDrawItem
-      OnMeasureItem = lbClustersMeasureItem
-      OnMouseDown = lbClustersMouseDown
-      OnMouseMove = lbClustersMouseMove
-    end
-    object meLog: TMemo
-      Left = 1
-      Height = 86
-      Top = 435
-      Width = 396
-      Align = alBottom
-      Lines.Strings = (
-        'Memo1'
-      )
-      ParentFont = False
-      ScrollBars = ssAutoVertical
-      TabOrder = 2
-    end
-    object ToolBar1: TToolBar
-      Left = 1
-      Top = 403
-      Width = 396
-      Align = alBottom
-      ButtonHeight = 28
-      ButtonWidth = 50
-      Caption = 'ToolBar1'
-      Flat = False
-      ParentFont = False
-      ShowCaptions = True
-      TabOrder = 1
-      object tbAutoMark: TToolButton
-        Left = 1
-        Top = 2
-        Caption = 'AutoMark'
-        OnClick = tbAutoMarkClick
-      end
-      object tbUnMark: TToolButton
-        Left = 75
-        Top = 2
-        Caption = 'UnMark'
-        OnClick = tbUnMarkClick
-      end
-      object tbUnIgnore: TToolButton
-        Left = 135
-        Top = 2
-        Caption = 'UnIgnore'
-        OnClick = tbUnIgnoreClick
-      end
-      object ToolButton1: TToolButton
-        Left = 205
-        Height = 28
-        Top = 2
-        Caption = 'ToolButton1'
-        Style = tbsDivider
-      end
-      object tbMarkedTrash: TToolButton
-        Left = 210
-        Top = 2
-        Caption = 'Trash'
-        OnClick = tbMarkedTrashClick
+        ScrollBars = ssAutoVertical
+        TabOrder = 2
       end
     end
   end
   object Splitter1: TSplitter
-    Left = 398
-    Height = 522
-    Top = 218
+    Left = 362
+    Height = 628
+    Top = 0
     Width = 6
+  end
+  object pnWorkspace: TPanel
+    Left = 368
+    Height = 628
+    Top = 0
+    Width = 763
+    Align = alClient
+    BorderSpacing.CellAlignVertical = ccaCenter
+    BevelOuter = bvNone
+    ClientHeight = 628
+    ClientWidth = 763
+    ParentFont = False
+    TabOrder = 0
+    object Panel1: TPanel
+      Left = 0
+      Height = 96
+      Top = 0
+      Width = 763
+      Align = alTop
+      BevelOuter = bvNone
+      ChildSizing.HorizontalSpacing = 8
+      ClientHeight = 96
+      ClientWidth = 763
+      TabOrder = 1
+      object GroupBox4: TGroupBox
+        Left = 0
+        Height = 96
+        Top = 0
+        Width = 296
+        Align = alLeft
+        Caption = 'Loader'
+        ClientHeight = 71
+        ClientWidth = 292
+        Constraints.MaxWidth = 300
+        Constraints.MinHeight = 90
+        TabOrder = 1
+        object GridLayoutPanel3: TGridLayoutPanel
+          Left = 0
+          Height = 71
+          Top = 0
+          Width = 292
+          LayoutOptions.ExpandColumnMode = geExpander
+          LayoutOptions.ExpandRowMode = geFair
+          LayoutOptions.ExpanderColumn = 1
+          Align = alClient
+          AutoSize = True
+          ChildSizing.HorizontalSpacing = 8
+          ClientHeight = 71
+          ClientWidth = 292
+          TabOrder = 0
+          object btnStartScanners: TButton
+            Left = 0
+            Height = 35
+            Top = 0
+            Width = 80
+            Caption = 'Start'
+            Constraints.MinHeight = 30
+            Constraints.MinWidth = 80
+            ParentFont = False
+            TabOrder = 0
+            OnClick = btnStartScannersClick
+          end
+          object btnStopScanner: TButton
+            Left = 0
+            Height = 36
+            Top = 35
+            Width = 80
+            Caption = 'Abort'
+            Constraints.MinHeight = 30
+            Constraints.MinWidth = 80
+            ParentFont = False
+            TabOrder = 1
+            OnClick = btnStopScannerClick
+          end
+          object lbStatus: TLabel
+            Left = 88
+            Height = 20
+            Top = 7
+            Width = 53
+            BorderSpacing.CellAlignVertical = ccaCenter
+            Caption = 'lbStatus'
+            ParentFont = False
+          end
+          object pbLoader: TProgressBar
+            Left = 88
+            Height = 30
+            Top = 38
+            Width = 204
+            BorderSpacing.CellAlignVertical = ccaCenter
+            Constraints.MaxHeight = 30
+            ParentFont = False
+            TabOrder = 2
+          end
+        end
+      end
+      object GroupBox3: TGroupBox
+        Left = 304
+        Height = 96
+        Top = 0
+        Width = 459
+        Align = alClient
+        Caption = 'Classifier'
+        ClientHeight = 71
+        ClientWidth = 455
+        Constraints.MaxWidth = 480
+        Constraints.MinHeight = 90
+        TabOrder = 0
+        object GridLayoutPanel2: TGridLayoutPanel
+          Left = 0
+          Height = 71
+          Top = 0
+          Width = 455
+          LayoutOptions.ColCount = 4
+          LayoutOptions.ExpandColumnMode = geExpander
+          LayoutOptions.ExpandRowMode = geFair
+          LayoutOptions.ExpanderColumn = 1
+          Align = alClient
+          ChildSizing.HorizontalSpacing = 8
+          ClientHeight = 71
+          ClientWidth = 455
+          TabOrder = 0
+          object Bevel1: TBevel
+            Left = 0
+            Height = 30
+            Top = 2
+            Width = 80
+            BorderSpacing.CellAlignVertical = ccaCenter
+            Constraints.MaxHeight = 30
+            Constraints.MinHeight = 30
+            Shape = bsSpacer
+          end
+          object btnRecompare: TButton
+            Left = 0
+            Height = 36
+            Top = 35
+            Width = 80
+            Caption = 'Re-Run'
+            Constraints.MinHeight = 30
+            Constraints.MinWidth = 80
+            ParentFont = False
+            TabOrder = 0
+            OnClick = btnRecompareClick
+          end
+          object Label3: TLabel
+            Left = 88
+            Height = 20
+            Top = 7
+            Width = 67
+            BorderSpacing.CellAlignVertical = ccaCenter
+            Caption = 'Tolerance:'
+            ParentFont = False
+          end
+          object seTolerance: TSpinEdit
+            Left = 88
+            Height = 28
+            Top = 39
+            Width = 80
+            BorderSpacing.CellAlignVertical = ccaCenter
+            Constraints.MaxWidth = 90
+            Constraints.MinWidth = 80
+            MaxValue = 16
+            ParentFont = False
+            TabOrder = 1
+            Value = 3
+          end
+          object Label4: TLabel
+            Left = 176
+            Height = 20
+            Top = 7
+            Width = 59
+            BorderSpacing.CellAlignVertical = ccaCenter
+            Caption = 'Min Size:'
+            ParentFont = False
+          end
+          object seMinDimension: TSpinEdit
+            Left = 176
+            Height = 28
+            Top = 39
+            Width = 80
+            BorderSpacing.CellAlignVertical = ccaCenter
+            Constraints.MaxWidth = 90
+            Constraints.MinWidth = 80
+            MaxValue = 2048
+            ParentFont = False
+            TabOrder = 2
+            Value = 128
+          end
+          object Bevel2: TBevel
+            Left = 264
+            Height = 30
+            Top = 2
+            Width = 191
+            BorderSpacing.CellAlignVertical = ccaCenter
+            Constraints.MaxHeight = 30
+            Constraints.MinHeight = 30
+            Shape = bsSpacer
+          end
+          object pbClassifier: TProgressBar
+            Left = 264
+            Height = 30
+            Top = 38
+            Width = 191
+            BorderSpacing.CellAlignVertical = ccaCenter
+            Constraints.MaxHeight = 30
+            ParentFont = False
+            TabOrder = 3
+          end
+        end
+      end
+    end
+    object Panel3: TPanel
+      Left = 0
+      Height = 532
+      Top = 96
+      Width = 763
+      Align = alClient
+      BevelOuter = bvNone
+      ClientHeight = 532
+      ClientWidth = 763
+      ParentFont = False
+      TabOrder = 0
+      object imHoverImage: TImage
+        Left = 0
+        Height = 512
+        Top = 0
+        Width = 763
+        Align = alClient
+        Proportional = True
+        Stretch = True
+      end
+      object lbHoverfile: TLabel
+        Left = 0
+        Height = 20
+        Top = 512
+        Width = 763
+        Align = alBottom
+        Caption = 'lbHoverfile'
+        ParentFont = False
+      end
+    end
   end
   object ilMarks: TImageList
     Left = 918

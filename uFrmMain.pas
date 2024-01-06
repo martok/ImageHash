@@ -6,33 +6,26 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, GraphType, CheckLst, Spin, ComCtrls, EditBtn, uThreadHashing, uThreadClassifier, Types;
+  ExtCtrls, GraphType, CheckLst, Spin, ComCtrls, EditBtn, uThreadHashing, uThreadClassifier, uGridLayoutPanel, Types;
 
 type
 
   { TForm1 }
 
   TForm1 = class(TForm)
-    Panel1: TPanel;
+    pnWorkspace: TPanel;
     clbFilter: TCheckListBox;
-    Panel2: TPanel;
     pbClassifier: TProgressBar;
-    btnStartScanners: TButton;
     seThreads: TSpinEdit;
-    pbLoader: TProgressBar;
     seThumbSize: TSpinEdit;
-    btnStopScanner: TButton;
-    lbStatus: TLabel;
     Label1: TLabel;
     Label2: TLabel;
     Panel3: TPanel;
     lbHoverfile: TLabel;
     imHoverImage: TImage;
-    Panel4: TPanel;
     lbClusters: TListBox;
     meLog: TMemo;
     Splitter1: TSplitter;
-    Bevel1: TBevel;
     btnRecompare: TButton;
     Label3: TLabel;
     seTolerance: TSpinEdit;
@@ -45,9 +38,28 @@ type
     tbUnIgnore: TToolButton;
     ToolButton1: TToolButton;
     tbMarkedTrash: TToolButton;
-    Panel5: TPanel;
+    pcSidebar: TPageControl;
+    tsScanSetup: TTabSheet;
+    tsScanResults: TTabSheet;
+    GroupBox1: TGroupBox;
+    Panel5: TGroupBox;
     mePaths: TMemo;
     dePaths: TDirectoryEdit;
+    Panel1: TPanel;
+    GroupBox2: TGroupBox;
+    GridLayoutPanel1: TGridLayoutPanel;
+    Splitter2: TSplitter;
+    GroupBox3: TGroupBox;
+    GridLayoutPanel2: TGridLayoutPanel;
+    GroupBox4: TGroupBox;
+    GridLayoutPanel3: TGridLayoutPanel;
+    btnStartScanners: TButton;
+    btnStopScanner: TButton;
+    pbLoader: TProgressBar;
+    lbStatus: TLabel;
+    Bevel1: TBevel;
+    Bevel2: TBevel;
+    Splitter3: TSplitter;
     procedure FormCreate(Sender: TObject);
     procedure btnStartScannersClick(Sender: TObject);
     procedure lbClustersDrawItem(Control: TWinControl; Index: Integer;
@@ -77,6 +89,8 @@ type
     procedure FreeData;
     procedure FreeClassifier;
     function GetCheckedFilters: string;
+    procedure RunLoaderAndWait;
+    procedure RunClassifier;
     procedure ImageLoadFinished;
     procedure ImageClassifierFinished;
     function ImageAtXY(X, Y: integer; out ICluster, IImage: integer): boolean;
@@ -119,12 +133,15 @@ begin
   end;
 
   Caption:= Application.Title;
+  pcSidebar.ActivePage:= tsScanSetup;
 
   seThreads.Value:= Max(1, TThread.ProcessorCount-1);
 
   meLog.Clear;
   lbHoverfile.Caption:= '';
   lbStatus.Caption:= 'Waiting...';
+  btnStopScanner.Enabled:= false;
+  btnStartScanners.Enabled:= true;
 
   mePaths.Clear;
   mePaths.Lines.Add(ExpandFileName(ConcatPaths([ExtractFilePath(ParamStr(0)),'..\data'])));
@@ -218,7 +235,7 @@ begin
   SetLength(Result, Length(Result)-1);
 end;
 
-procedure TForm1.btnStartScannersClick(Sender: TObject);
+procedure TForm1.RunLoaderAndWait;
 var
   scanners: array of TFileScannerThread;
   i, j, k: Integer;
@@ -233,7 +250,7 @@ begin
 
   btnStartScanners.Enabled:= false;
   btnStopScanner.Enabled:= true;
-  mePaths.Enabled:= false;
+  tsScanSetup.Enabled:= false;
   try
     fAbortFlag:= false;
     filter:= GetCheckedFilters;
@@ -269,7 +286,7 @@ begin
     t1:= GetTickCount64;
 
     lbStatus.Caption:= 'Setup classifier...';
-    btnRecompare.Click;
+    RunClassifier;
 
     lbStatus.Caption:= 'Setup loader...';
     SetLength(loaders, seThreads.Value);
@@ -320,18 +337,13 @@ begin
     meLog.Lines.Add('clusters>1: %d',[k]);
     PrintMemStats;
   finally
-    mePaths.Enabled:= True;
+    tsScanSetup.Enabled:= True;
     btnStopScanner.Enabled:= false;
     btnStartScanners.Enabled:= true;
   end;
 end;
 
-procedure TForm1.btnStopScannerClick(Sender: TObject);
-begin
-  fAbortFlag:= true;
-end;
-
-procedure TForm1.btnRecompareClick(Sender: TObject);
+procedure TForm1.RunClassifier;
 begin
   FreeClassifier;
   pbClassifier.Position:= 0;
@@ -343,6 +355,22 @@ begin
   fClassifier.MinDimension:= seMinDimension.Value;
   fClassifier.OnImageFinish:= @ImageClassifierFinished;
   fClassifier.Start;
+end;
+
+procedure TForm1.btnStartScannersClick(Sender: TObject);
+begin
+  pcSidebar.ActivePage:= tsScanResults;
+  RunLoaderAndWait;
+end;
+
+procedure TForm1.btnStopScannerClick(Sender: TObject);
+begin
+  fAbortFlag:= true;
+end;
+
+procedure TForm1.btnRecompareClick(Sender: TObject);
+begin
+  RunClassifier;
 end;
 
 
