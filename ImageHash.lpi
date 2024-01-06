@@ -25,8 +25,8 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="fpreadjpeg-turbo"/>
-            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+            <OtherUnitFiles Value="lib\fpreadjpeg-turbo;lib\FastMM4-AVX"/>
+            <UnitOutputDirectory Value="obj\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
             <TargetCPU Value="x86_64"/>
@@ -38,7 +38,7 @@
           <Linking>
             <Debugging>
               <DebugInfoType Value="dsDwarf2"/>
-              <UseHeaptrc Value="True"/>
+              <UseExternalDbgSyms Value="True"/>
             </Debugging>
             <Options>
               <Win32>
@@ -124,7 +124,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="lib\fpreadjpeg-turbo;lib\FastMM4"/>
+      <OtherUnitFiles Value="lib\fpreadjpeg-turbo;lib\FastMM4-AVX"/>
       <UnitOutputDirectory Value="obj\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>
@@ -134,7 +134,7 @@
     </CodeGeneration>
     <Linking>
       <Debugging>
-        <DebugInfoType Value="dsDwarf2"/>
+        <DebugInfoType Value="dsDwarf3"/>
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
       <Options>

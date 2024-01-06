@@ -5,7 +5,9 @@ program ImageHash;
 {$mode objfpc}{$H+}
 
 uses
+  {$if not Declared(UseHeapTrace)}
   FastMM4,
+  {$ifend}
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
@@ -13,17 +15,23 @@ uses
   sysutils,
   Forms,
   {$IFDEF USE_JPEGTURBO}
+  FPReadJPEGTurbo,
   {$ENDIF}
   uFrmMain, uImageHashing, uThreadScanner, uThreadHashing, uThreadClassifier,
-  uUtils, uFrmAutoMark, FPReadJPEGTurbo;
+  uUtils, uFrmAutoMark;
 
 {$R *.res}
-
+     
+{$if Declared(UseHeapTrace)}
+var
+  heapTrcFile: string;
+{$ifend}
 begin
   {$if Declared(UseHeapTrace)}
-  if FileExists('heap.trc') then
-    DeleteFile('heap.trc');
-  SetHeapTraceOutput('heap.trc');
+  heapTrcFile:= ExtractFilePath(ParamStr(0)) + 'heap.trc';
+  if FileExists(heapTrcFile) then
+    DeleteFile(heapTrcFile);
+  SetHeapTraceOutput(heapTrcFile);
   {$ifend}
 
   RequireDerivedFormResource:=True;

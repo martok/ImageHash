@@ -376,7 +376,7 @@ procedure TForm1.PrintMemStats;
 
 var
   szAll, szList, szClusters: PtrUInt;
-  hs: THeapStatus;
+  hs: TFPCHeapStatus;
   i: Integer;
 begin
   // count up
@@ -399,10 +399,11 @@ begin
   meLog.Lines.Add('UsedAll = %d k', [szAll shr 10]);
   meLog.Lines.Add('UsedList = %d k', [szList shr 10]);
   meLog.Lines.Add('UsedClusters = %d k', [szClusters shr 10]);
-  hs:= GetHeapStatus;
-  meLog.Lines.Add('TotalAddrSpace = %d k', [hs.TotalAddrSpace shr 10]);
-  meLog.Lines.Add('TotalAllocated = %d k', [hs.TotalAllocated shr 10]);
-  meLog.Lines.Add('TotalFree = %d k', [hs.TotalFree shr 10]);
+  hs:= GetFPCHeapStatus;
+  meLog.Lines.Add('MaxHeapSize = %d k', [hs.MaxHeapSize shr 10]);
+  meLog.Lines.Add('MaxHeapUsed = %d k', [hs.MaxHeapUsed shr 10]);
+  meLog.Lines.Add('CurrHeapSize = %d k', [hs.CurrHeapSize shr 10]);
+  meLog.Lines.Add('CurrHeapUsed = %d k', [hs.CurrHeapUsed shr 10]);
 end;
 
 procedure TForm1.lbClustersMouseMove(Sender: TObject; Shift: TShiftState; X,
