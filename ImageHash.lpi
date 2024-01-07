@@ -62,12 +62,15 @@
     <RunParams>
       <FormatVersion Value="2"/>
     </RunParams>
-    <RequiredPackages Count="1">
+    <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="LCL"/>
+        <PackageName Value="bitSpaceControls"/>
       </Item1>
+      <Item2>
+        <PackageName Value="LCL"/>
+      </Item2>
     </RequiredPackages>
-    <Units Count="10">
+    <Units Count="11">
       <Unit0>
         <Filename Value="ImageHash.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -114,6 +117,12 @@
         <Filename Value="lib\fpreadjpeg-turbo\turbojpeg.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit9>
+      <Unit10>
+        <Filename Value="uFrmPathEditor.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmPathEditor"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit10>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

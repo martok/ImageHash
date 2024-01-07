@@ -1,0 +1,47 @@
+object frmPathEditor: TfrmPathEditor
+  Left = 0
+  Height = 300
+  Top = 0
+  Width = 400
+  ChildSizing.VerticalSpacing = 4
+  ClientHeight = 300
+  ClientWidth = 400
+  DesignTimePPI = 120
+  ParentFont = False
+  TabOrder = 0
+  DesignLeft = 391
+  DesignTop = 10
+  object mePaths: TMemo
+    Left = 0
+    Height = 268
+    Top = 32
+    Width = 400
+    Align = alClient
+    HideSelection = False
+    ParentFont = False
+    ScrollBars = ssAutoBoth
+    TabOrder = 0
+    WordWrap = False
+    OnChange = mePathsChange
+    OnClick = mePathsClick
+    OnEditingDone = mePathsEditingDone
+    OnKeyPress = mePathsKeyPress
+  end
+  object dePaths: TDirectoryEdit
+    Left = 0
+    Height = 28
+    Top = 0
+    Width = 400
+    Directory = 'dePaths'
+    OnAcceptDirectory = dePathsAcceptDirectory
+    DialogOptions = [ofPathMustExist, ofEnableSizing, ofViewDetail]
+    ShowHidden = False
+    ButtonWidth = 29
+    NumGlyphs = 1
+    FocusOnButtonClick = True
+    Align = alTop
+    MaxLength = 0
+    TabOrder = 1
+    Text = 'dePaths'
+  end
+end

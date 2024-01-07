@@ -5,8 +5,8 @@ unit uFrmMain;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, GraphType, CheckLst, Spin, ComCtrls, EditBtn, uThreadHashing, uThreadClassifier, uGridLayoutPanel, Types;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, GraphType, CheckLst, Spin, ComCtrls,
+  uThreadHashing, uThreadClassifier, uFrmPathEditor, uGridLayoutPanel, Types;
 
 type
 
@@ -43,8 +43,6 @@ type
     tsScanResults: TTabSheet;
     GroupBox1: TGroupBox;
     Panel5: TGroupBox;
-    mePaths: TMemo;
-    dePaths: TDirectoryEdit;
     Panel1: TPanel;
     GroupBox2: TGroupBox;
     GridLayoutPanel1: TGridLayoutPanel;
@@ -60,6 +58,7 @@ type
     Bevel1: TBevel;
     Bevel2: TBevel;
     Splitter3: TSplitter;
+    frmPathEditor1: TfrmPathEditor;
     procedure FormCreate(Sender: TObject);
     procedure btnStartScannersClick(Sender: TObject);
     procedure lbClustersDrawItem(Control: TWinControl; Index: Integer;
@@ -77,11 +76,6 @@ type
     procedure tbUnMarkClick(Sender: TObject);
     procedure tbUnIgnoreClick(Sender: TObject);
     procedure tbMarkedTrashClick(Sender: TObject);
-    procedure mePathsChange(Sender: TObject);
-    procedure mePathsKeyPress(Sender: TObject; var Key: char);
-    procedure mePathsMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure dePathsAcceptDirectory(Sender: TObject; var Value: String);
-    procedure mePathsKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     fClassifier: TClassifierThread;
     fImageInfos: TImageInfoList;
@@ -143,9 +137,8 @@ begin
   btnStopScanner.Enabled:= false;
   btnStartScanners.Enabled:= true;
 
-  mePaths.Clear;
-  mePaths.Lines.Add(ExpandFileName(ConcatPaths([ExtractFilePath(ParamStr(0)),'..\data'])));
-  mePathsChange(Self);
+  frmPathEditor1.Clear;
+  frmPathEditor1.Add(ExpandFileName(ConcatPaths([ExtractFilePath(ParamStr(0)),'..\data'])));
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
@@ -238,6 +231,7 @@ end;
 procedure TForm1.RunLoaderAndWait;
 var
   scanners: array of TFileScannerThread;
+  scanner: TFileScannerThread;
   i, j, k: Integer;
   filter: String;
   loaders: array of TImageHashThread;
@@ -256,12 +250,15 @@ begin
     filter:= GetCheckedFilters;
 
     lbStatus.Caption:= 'Creating file list...';
-    SetLength(scanners, mePaths.Lines.Count);
-    for i:= 0 to High(scanners) do begin
-      scanners[i]:= TFileScannerThread.Create;
-      scanners[i].Path:= mePaths.Lines[i];
-      scanners[i].Filter:= filter;
-      scanners[i].Start;
+    scanners:= nil;
+    for i:= 0 to frmPathEditor1.Items.Count - 1 do begin
+      if not DirectoryExists(frmPathEditor1.Items[i]) then
+        continue;
+      scanner:= TFileScannerThread.Create;
+      scanner.Path:= frmPathEditor1.Items[i];
+      scanner.Filter:= filter;
+      scanner.Start;
+      Insert(scanner, scanners, length(scanners));
     end;
     WaitForMultipleThreads(@scanners[0], length(scanners), @Application.ProcessMessages);
 
@@ -292,7 +289,7 @@ begin
     SetLength(loaders, seThreads.Value);
     for i:= 0 to High(loaders) do begin
       loaders[i]:= TImageHashThread.Create;
-      loaders[i].Prefixes:= mePaths.Lines;
+      loaders[i].Prefixes:= frmPathEditor1.Items;
       loaders[i].List:= PImageInfoList(@fImageInfos[0]);
       loaders[i].Count:= Length(fImageInfos);
       loaders[i].ThumbSize:= seThumbSize.Value;
@@ -315,7 +312,7 @@ begin
       // rerun a single loader to redo all that failed because of OutOfMemory errors
       SetLength(loaders, 1);
       loaders[0]:= TImageHashThread.Create;
-      loaders[0].Prefixes:= mePaths.Lines;
+      loaders[0].Prefixes:= frmPathEditor1.Items;
       loaders[0].List:= PImageInfoList(@fImageInfos[0]);
       loaders[0].Count:= Length(fImageInfos);
       loaders[0].ThumbSize:= seThumbSize.Value;
@@ -359,6 +356,10 @@ end;
 
 procedure TForm1.btnStartScannersClick(Sender: TObject);
 begin
+  pcSidebar.ActivePage:= tsScanSetup;
+  if not frmPathEditor1.ValidatePaths then
+    exit;
+
   pcSidebar.ActivePage:= tsScanResults;
   RunLoaderAndWait;
 end;
@@ -464,7 +465,7 @@ begin
   imHoverImage.Tag:= PtrInt(im);
   imHoverImage.Picture.Bitmap.Assign(im^.Thumbnail);
   imHoverImage.Refresh;
-  fullname:= im^.FullName(mePaths.Lines);
+  fullname:= im^.FullName(frmPathEditor1.Items);
   lbHoverfile.Caption:= Format('%s', [fullname]);
   if FindFirst(fullname, faAnyFile, sr) = 0 then begin
     img:= imgLoadFromFile(fullname);
@@ -532,7 +533,7 @@ begin
   case Button of
     mbLeft: if im^.Mark = imDelete then im^.Mark:= imUnmarked else im^.Mark:= imDelete;
     mbMiddle: im^.Mark:= imIgnore;
-    mbRight: OpenDocument(im^.FullName(mePaths.Lines));
+    mbRight: OpenDocument(im^.FullName(frmPathEditor1.Items));
   end;
   lbClusters.Invalidate;
 end;
@@ -604,7 +605,7 @@ begin
     for i:= marked.Count-1 downto 0 do begin
       idx:= marked[i];
       im:= @ImageInfos[idx];
-      if SendFilesToTrash([im^.FullName(mePaths.Lines)]) then begin
+      if SendFilesToTrash([im^.FullName(frmPathEditor1.Items)]) then begin
         im^.Done;
         Delete(fImageInfos, idx, 1);
       end;
@@ -612,48 +613,7 @@ begin
   finally
     FreeAndNil(marked);
   end;
-  btnRecompare.Click;
-end;
-
-procedure TForm1.mePathsChange(Sender: TObject);
-var
-  i: LongInt;
-  l: String;
-begin
-  i:= mePaths.CaretPos.Y;
-  if (i>=0) and (i<mePaths.Lines.Count) then begin
-    l:= mePaths.Lines[i];
-    dePaths.Directory:= l;
-  end else
-    dePaths.Directory:= '';
-end;
-
-procedure TForm1.mePathsKeyPress(Sender: TObject; var Key: char);
-begin
-  mePathsChange(Sender);
-end;
-
-procedure TForm1.mePathsMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-  mePathsChange(Sender);
-end;
-
-procedure TForm1.mePathsKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  mePathsChange(Sender);
-end;
-
-procedure TForm1.dePathsAcceptDirectory(Sender: TObject; var Value: String);
-var
-  l: String;
-  c: TPoint;
-begin
-  c:= mePaths.CaretPos;
-  if (c.y>=0) and (c.y<mePaths.Lines.Count) then
-    mePaths.Lines[c.y]:= Value
-  else
-    mePaths.Lines.Add(Value);
-  mePaths.CaretPos:= c;
+  RunClassifier;
 end;
 
 end.

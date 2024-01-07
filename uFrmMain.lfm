@@ -102,40 +102,10 @@ object Form1: TForm1
         ClientHeight = 370
         ClientWidth = 324
         TabOrder = 1
-        object mePaths: TMemo
-          Left = 0
-          Height = 342
-          Top = 0
+        inline frmPathEditor1: TfrmPathEditor
+          Height = 370
           Width = 324
           Align = alClient
-          Lines.Strings = (
-            'mePaths'
-          )
-          ParentFont = False
-          ScrollBars = ssAutoBoth
-          TabOrder = 0
-          WordWrap = False
-          OnChange = mePathsChange
-          OnClick = mePathsChange
-          OnEnter = mePathsChange
-          OnKeyPress = mePathsKeyPress
-          OnKeyUp = mePathsKeyUp
-          OnMouseUp = mePathsMouseUp
-        end
-        object dePaths: TDirectoryEdit
-          Left = 0
-          Height = 28
-          Top = 342
-          Width = 324
-          Directory = 'dePaths'
-          OnAcceptDirectory = dePathsAcceptDirectory
-          ShowHidden = False
-          ButtonWidth = 29
-          NumGlyphs = 1
-          Align = alBottom
-          MaxLength = 0
-          TabOrder = 1
-          Text = 'dePaths'
         end
       end
       object GroupBox1: TGroupBox
@@ -275,30 +245,30 @@ object Form1: TForm1
     TabOrder = 0
     object Panel1: TPanel
       Left = 0
-      Height = 96
+      Height = 88
       Top = 0
       Width = 763
       Align = alTop
       BevelOuter = bvNone
       ChildSizing.HorizontalSpacing = 8
-      ClientHeight = 96
+      ClientHeight = 88
       ClientWidth = 763
       TabOrder = 1
       object GroupBox4: TGroupBox
         Left = 0
-        Height = 96
+        Height = 90
         Top = 0
         Width = 296
         Align = alLeft
         Caption = 'Loader'
-        ClientHeight = 71
+        ClientHeight = 65
         ClientWidth = 292
         Constraints.MaxWidth = 300
         Constraints.MinHeight = 90
         TabOrder = 1
         object GridLayoutPanel3: TGridLayoutPanel
           Left = 0
-          Height = 71
+          Height = 65
           Top = 0
           Width = 292
           LayoutOptions.ExpandColumnMode = geExpander
@@ -307,16 +277,16 @@ object Form1: TForm1
           Align = alClient
           AutoSize = True
           ChildSizing.HorizontalSpacing = 8
-          ClientHeight = 71
+          ClientHeight = 65
           ClientWidth = 292
           TabOrder = 0
           object btnStartScanners: TButton
             Left = 0
-            Height = 35
+            Height = 32
             Top = 0
             Width = 80
             Caption = 'Start'
-            Constraints.MinHeight = 30
+            Constraints.MinHeight = 28
             Constraints.MinWidth = 80
             ParentFont = False
             TabOrder = 0
@@ -324,11 +294,11 @@ object Form1: TForm1
           end
           object btnStopScanner: TButton
             Left = 0
-            Height = 36
-            Top = 35
+            Height = 33
+            Top = 32
             Width = 80
             Caption = 'Abort'
-            Constraints.MinHeight = 30
+            Constraints.MinHeight = 28
             Constraints.MinWidth = 80
             ParentFont = False
             TabOrder = 1
@@ -337,7 +307,7 @@ object Form1: TForm1
           object lbStatus: TLabel
             Left = 88
             Height = 20
-            Top = 7
+            Top = 6
             Width = 53
             BorderSpacing.CellAlignVertical = ccaCenter
             Caption = 'lbStatus'
@@ -345,11 +315,11 @@ object Form1: TForm1
           end
           object pbLoader: TProgressBar
             Left = 88
-            Height = 30
-            Top = 38
+            Height = 28
+            Top = 34
             Width = 204
             BorderSpacing.CellAlignVertical = ccaCenter
-            Constraints.MaxHeight = 30
+            Constraints.MaxHeight = 28
             ParentFont = False
             TabOrder = 2
           end
@@ -357,19 +327,19 @@ object Form1: TForm1
       end
       object GroupBox3: TGroupBox
         Left = 304
-        Height = 96
+        Height = 90
         Top = 0
         Width = 459
         Align = alClient
         Caption = 'Classifier'
-        ClientHeight = 71
+        ClientHeight = 65
         ClientWidth = 455
         Constraints.MaxWidth = 480
         Constraints.MinHeight = 90
         TabOrder = 0
         object GridLayoutPanel2: TGridLayoutPanel
           Left = 0
-          Height = 71
+          Height = 65
           Top = 0
           Width = 455
           LayoutOptions.ColCount = 4
@@ -378,26 +348,26 @@ object Form1: TForm1
           LayoutOptions.ExpanderColumn = 1
           Align = alClient
           ChildSizing.HorizontalSpacing = 8
-          ClientHeight = 71
+          ClientHeight = 65
           ClientWidth = 455
           TabOrder = 0
           object Bevel1: TBevel
             Left = 0
             Height = 30
-            Top = 2
+            Top = 1
             Width = 80
             BorderSpacing.CellAlignVertical = ccaCenter
             Constraints.MaxHeight = 30
-            Constraints.MinHeight = 30
+            Constraints.MinHeight = 28
             Shape = bsSpacer
           end
           object btnRecompare: TButton
             Left = 0
-            Height = 36
-            Top = 35
+            Height = 33
+            Top = 32
             Width = 80
             Caption = 'Re-Run'
-            Constraints.MinHeight = 30
+            Constraints.MinHeight = 28
             Constraints.MinWidth = 80
             ParentFont = False
             TabOrder = 0
@@ -406,7 +376,7 @@ object Form1: TForm1
           object Label3: TLabel
             Left = 88
             Height = 20
-            Top = 7
+            Top = 6
             Width = 67
             BorderSpacing.CellAlignVertical = ccaCenter
             Caption = 'Tolerance:'
@@ -415,7 +385,7 @@ object Form1: TForm1
           object seTolerance: TSpinEdit
             Left = 88
             Height = 28
-            Top = 39
+            Top = 34
             Width = 80
             BorderSpacing.CellAlignVertical = ccaCenter
             Constraints.MaxWidth = 90
@@ -428,7 +398,7 @@ object Form1: TForm1
           object Label4: TLabel
             Left = 176
             Height = 20
-            Top = 7
+            Top = 6
             Width = 59
             BorderSpacing.CellAlignVertical = ccaCenter
             Caption = 'Min Size:'
@@ -437,7 +407,7 @@ object Form1: TForm1
           object seMinDimension: TSpinEdit
             Left = 176
             Height = 28
-            Top = 39
+            Top = 34
             Width = 80
             BorderSpacing.CellAlignVertical = ccaCenter
             Constraints.MaxWidth = 90
@@ -450,20 +420,20 @@ object Form1: TForm1
           object Bevel2: TBevel
             Left = 264
             Height = 30
-            Top = 2
+            Top = 1
             Width = 191
             BorderSpacing.CellAlignVertical = ccaCenter
             Constraints.MaxHeight = 30
-            Constraints.MinHeight = 30
+            Constraints.MinHeight = 28
             Shape = bsSpacer
           end
           object pbClassifier: TProgressBar
             Left = 264
-            Height = 30
-            Top = 38
+            Height = 28
+            Top = 34
             Width = 191
             BorderSpacing.CellAlignVertical = ccaCenter
-            Constraints.MaxHeight = 30
+            Constraints.MaxHeight = 28
             ParentFont = False
             TabOrder = 3
           end
@@ -472,18 +442,18 @@ object Form1: TForm1
     end
     object Panel3: TPanel
       Left = 0
-      Height = 532
-      Top = 96
+      Height = 540
+      Top = 88
       Width = 763
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 532
+      ClientHeight = 540
       ClientWidth = 763
       ParentFont = False
       TabOrder = 0
       object imHoverImage: TImage
         Left = 0
-        Height = 512
+        Height = 520
         Top = 0
         Width = 763
         Align = alClient
@@ -493,7 +463,7 @@ object Form1: TForm1
       object lbHoverfile: TLabel
         Left = 0
         Height = 20
-        Top = 512
+        Top = 520
         Width = 763
         Align = alBottom
         Caption = 'lbHoverfile'

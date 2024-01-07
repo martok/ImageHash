@@ -21,9 +21,7 @@ type
     cbOlderFile: TCheckBox;
     procedure btnMarkClick(Sender: TObject);
   private
-
   public
-
   end;
 
 var
@@ -75,8 +73,8 @@ var
         Exit(1);
     end;
     if cbLargerFile.Checked or cbOlderFile.Checked then begin
-      GetFileInfos(ConcatPaths([Form1.mePaths.Lines[im1^.Sourcedir], im1^.Filename]), a1);
-      GetFileInfos(ConcatPaths([Form1.mePaths.Lines[im2^.Sourcedir], im2^.Filename]), a2);
+      GetFileInfos(im1^.FullName(Form1.frmPathEditor1.Items), a1);
+      GetFileInfos(im2^.FullName(Form1.frmPathEditor1.Items), a2);
     end;
     if cbLargerFile.Checked then begin
       if a1.Size>a2.Size then

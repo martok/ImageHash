@@ -18,7 +18,7 @@ uses
   FPReadJPEGTurbo,
   {$ENDIF}
   uFrmMain, uImageHashing, uThreadScanner, uThreadHashing, uThreadClassifier,
-  uUtils, uFrmAutoMark;
+  uUtils, uFrmAutoMark, uFrmPathEditor;
 
 {$R *.res}
      

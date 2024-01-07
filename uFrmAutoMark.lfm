@@ -9,7 +9,7 @@ object frmAutoMark: TfrmAutoMark
   ClientWidth = 303
   DesignTimePPI = 120
   Position = poScreenCenter
-  LCLVersion = '2.1.0.0'
+  LCLVersion = '3.99.0.0'
   object Label1: TLabel
     Left = 16
     Height = 20
@@ -64,8 +64,8 @@ object frmAutoMark: TfrmAutoMark
     Top = 216
     Width = 94
     Caption = 'Mark'
-    OnClick = btnMarkClick
     TabOrder = 5
+    OnClick = btnMarkClick
   end
   object Button2: TButton
     Left = 192

@@ -111,15 +111,10 @@ end;
 
 procedure TImageHashThread.Execute;
 var
-  prefPaths: array of String;
   cursor, i: integer;
   im: PImageInfoItem;
   fn: String;
 begin
-  SetLength(prefPaths{%H-}, fPrefixes.Count);
-  for i:= 0 to high(prefPaths) do
-    prefPaths[i]:= IncludeTrailingPathDelimiter(fPrefixes[i]);
-
   for cursor:= 0 to fCount - 1 do begin
     if Terminated then
       Break;
@@ -130,7 +125,7 @@ begin
       continue;
 
     // we got this item, work on it
-    fn:= prefPaths[im^.Sourcedir] + im^.Filename;
+    fn:= im^.FullName(fPrefixes);
     try
       hashFromFileName(fn, @im^.Hash00, @im^.Hash90, @im^.Hash180, fThumbSize, @im^.thumbnail, @im^.ImgW, @im^.ImgH);
     except
