@@ -24,7 +24,7 @@
             <Filename Value="bin_$(TargetCPU)\ImageHash"/>
           </Target>
           <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
+            <IncludeFiles Value="$(ProjOutDir);lib\FastMM4-AVX"/>
             <OtherUnitFiles Value="lib\fpreadjpeg-turbo;lib\FastMM4-AVX"/>
             <UnitOutputDirectory Value="obj\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
@@ -132,7 +132,7 @@
       <Filename Value="bin_$(TargetCPU)\ImageHash"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="$(ProjOutDir)"/>
+      <IncludeFiles Value="$(ProjOutDir);lib\FastMM4-AVX"/>
       <OtherUnitFiles Value="lib\fpreadjpeg-turbo;lib\FastMM4-AVX"/>
       <UnitOutputDirectory Value="obj\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
