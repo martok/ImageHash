@@ -163,13 +163,9 @@ var
 begin
   pbClassifier.Position:= pbClassifier.Position + 1;
 
-  { TODO : Locking }
   clusters:= TClusterList.Create;
   try
-    for c in fClassifier.Clusters do begin
-      if c.Count > 1 then
-        clusters.Add(c);
-    end;
+    fClassifier.GetClusters(clusters);
     if clusters.Count <> lbClusters.Count then begin
       oldtop:= lbClusters.TopIndex;
       lbClusters.Items.BeginUpdate;
@@ -319,8 +315,8 @@ begin
       loaders[0].FinalMemoryError:= true;
       loaders[0].OnImageFinish:= @ImageLoadFinished;
       loaders[0].Start;
+      WaitForMultipleThreads(@loaders[0], length(loaders), @Application.ProcessMessages, @fAbortFlag);
     end;
-    WaitForMultipleThreads(@loaders[0], length(loaders), @Application.ProcessMessages, @fAbortFlag);
     WaitForMultipleThreads(@fClassifier, 1, @Application.ProcessMessages, @fAbortFlag);
 
     t2:= GetTickCount64;

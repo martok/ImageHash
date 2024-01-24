@@ -11,8 +11,11 @@ type
   TCluster = TIntegerList;
   TClusterList = specialize TFPGList<TCluster>;
 
+  { TClassifierThread }
+
   TClassifierThread = class(TThread)
   private
+    fClustersLock: TCriticalSection;
     fCount: integer;
     fList: PImageInfoList;
     fWakeEvent: TEvent;
@@ -31,6 +34,8 @@ type
     property Limit: integer read fLimit write fLimit;
     property MinDimension: integer read fMinDimension write fMinDimension;
     property Clusters: TClusterList read fClusters;
+
+    procedure GetClusters(const aClusters: TClusterList);
 
     property OnImageFinish: TImageFinishEvent read fImageFinishEvent write fImageFinishEvent;
   end;
@@ -91,6 +96,7 @@ begin
   fCount:= 0;
   fWakeEvent:= TSimpleEvent.Create;
   fClusters:= TClusterList.Create;
+  fClustersLock:= TCriticalSection.Create;
   fLimit:= 3;
   fMinDimension:= 0;
 end;
@@ -99,11 +105,28 @@ destructor TClassifierThread.Destroy;
 var
   c: TCluster;
 begin
+  fClustersLock.Acquire;
   for c in fClusters do
     c.Free;
   FreeAndNil(fClusters);
+  FreeAndNil(fClustersLock);
   FreeAndNil(fWakeEvent);
   inherited Destroy;
+end;
+
+procedure TClassifierThread.GetClusters(const aClusters: TClusterList);
+var
+  c: TCluster;
+begin
+  fClustersLock.Acquire;
+  try
+    for c in fClusters do begin
+      if c.Count > 1 then
+        aClusters.Add(c);
+    end;
+  finally
+    fClustersLock.Release;
+  end;
 end;
 
 function SortFunc_ClusterByLength(const Item1, Item2: TCluster): Integer;
@@ -140,13 +163,15 @@ begin
   cursor:= 0;
   while not Terminated and (cursor < fCount) do begin
     if InterlockedCompareExchange(fList[cursor].Status, STATUS_DONE, STATUS_DONE) <> STATUS_DONE then begin
-      Sleep(100);
+      fWakeEvent.ResetEvent;
+      Sleep(10);
       fWakeEvent.WaitFor(100);
       Continue;
     end;
     im:= @fList[Cursor];
     if (im^.Error = '') and (im^.ImgW>=fMinDimension) and (im^.ImgH>=fMinDimension) then begin
       chosenCluster:= nil;
+      fClustersLock.Acquire;
       matchclusters:= TClusterList.Create;
       try        
         // compare against all known clusters
@@ -180,13 +205,19 @@ begin
         end;
       finally
         FreeAndNil(matchclusters);
+        fClustersLock.Release;
       end;
 
       if not Assigned(chosenCluster) then begin
         c:= TCluster.Create;
         c.Add(cursor);
-        fClusters.Add(c);
-      end;
+        fClustersLock.Acquire;
+        try
+          fClusters.Add(c);
+        finally
+          fClustersLock.Release;
+        end;
+      end;  
     end;
 
     if Assigned(fImageFinishEvent) then
