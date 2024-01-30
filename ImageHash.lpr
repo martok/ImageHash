@@ -6,7 +6,7 @@ program ImageHash;
 
 uses
   {$if not Declared(UseHeapTrace)}
-  FastMM4,
+  ConcMM,
   {$ifend}
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,

@@ -1,0 +1,4 @@
+[submodule "lib/ConcurrentMM"]
+	path = lib/ConcurrentMM
+	url = git@github.com:martok/ConcurrentMM.git
+	branch = main
