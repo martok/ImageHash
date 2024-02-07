@@ -143,7 +143,9 @@ begin
   btnRecompare.Enabled:= false;
 
   frmPathEditor1.Clear;
+  {$IfDef DEBUG}
   frmPathEditor1.Add(ExpandFileName(ConcatPaths([ExtractFilePath(ParamStr(0)),'..\data'])));
+  {$EndIf}
 end;
 
 procedure TfmMain.FormDestroy(Sender: TObject);
@@ -333,7 +335,9 @@ begin
         inc(k);
     end;
     meLog.Lines.Add('clusters>1: %d',[k]);
+    {$IfDef DEBUG}
     PrintMemStats;
+    {$EndIf}
   finally
     tsScanSetup.Enabled:= True;
     btnStartStopLoader.ImageIndex:= IMAGE_SCAN_START;

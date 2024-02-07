@@ -164,8 +164,9 @@
       <CustomOptions Value="-CpCOREI
 -OpCOREI
 -dUSE_JPEGTURBO"/>
-      <OtherDefines Count="1">
+      <OtherDefines Count="2">
         <Define0 Value="USE_JPEGTURBO"/>
+        <Define1 Value="DEBUG"/>
       </OtherDefines>
     </Other>
   </CompilerOptions>
