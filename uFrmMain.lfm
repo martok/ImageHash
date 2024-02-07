@@ -1,9 +1,8 @@
-object Form1: TForm1
+object fmMain: TfmMain
   Left = 341
   Height = 700
   Top = 186
   Width = 1200
-  Caption = 'Form1'
   ClientHeight = 700
   ClientWidth = 1200
   Constraints.MinHeight = 400
@@ -16,7 +15,7 @@ object Form1: TForm1
     Left = 0
     Height = 700
     Top = 0
-    Width = 362
+    Width = 355
     ActivePage = tsScanSetup
     Align = alLeft
     TabIndex = 0
@@ -26,19 +25,19 @@ object Form1: TForm1
     object tsScanSetup: TTabSheet
       Caption = 'Setup'
       ClientHeight = 692
-      ClientWidth = 328
+      ClientWidth = 321
       object GroupBox2: TGroupBox
         Left = 0
         Height = 96
         Top = 0
-        Width = 328
+        Width = 321
         Align = alTop
         AutoSize = True
         Caption = 'Scan Settings'
         ChildSizing.LeftRightSpacing = 5
         ChildSizing.TopBottomSpacing = 5
         ClientHeight = 71
-        ClientWidth = 324
+        ClientWidth = 317
         TabOrder = 2
         object Label1: TLabel
           AnchorSideLeft.Control = GroupBox2
@@ -57,7 +56,7 @@ object Form1: TForm1
           AnchorSideTop.Control = GroupBox2
           AnchorSideRight.Control = GroupBox2
           AnchorSideRight.Side = asrBottom
-          Left = 168
+          Left = 161
           Height = 28
           Top = 5
           Width = 151
@@ -87,7 +86,7 @@ object Form1: TForm1
           AnchorSideTop.Side = asrBottom
           AnchorSideRight.Control = GroupBox2
           AnchorSideRight.Side = asrBottom
-          Left = 168
+          Left = 161
           Height = 28
           Top = 38
           Width = 151
@@ -105,28 +104,28 @@ object Form1: TForm1
         Left = 0
         Height = 459
         Top = 96
-        Width = 328
+        Width = 321
         Align = alClient
         Caption = 'Scan Paths'
         ChildSizing.LeftRightSpacing = 5
         ChildSizing.TopBottomSpacing = 5
         ClientHeight = 434
-        ClientWidth = 324
+        ClientWidth = 317
         TabOrder = 1
         inline frmPathEditor1: TfrmPathEditor
           Left = 5
           Height = 424
           Top = 5
-          Width = 314
+          Width = 307
           Align = alClient
           ClientHeight = 424
-          ClientWidth = 314
+          ClientWidth = 307
           inherited mePaths: TMemo
             Height = 392
-            Width = 314
+            Width = 307
           end
           inherited dePaths: TDirectoryEdit
-            Width = 314
+            Width = 307
             Directory = ''
             Text = ''
           end
@@ -136,19 +135,19 @@ object Form1: TForm1
         Left = 0
         Height = 131
         Top = 561
-        Width = 328
+        Width = 321
         Align = alBottom
         Caption = 'Image Type Filter'
         ChildSizing.LeftRightSpacing = 5
         ChildSizing.TopBottomSpacing = 5
         ClientHeight = 106
-        ClientWidth = 324
+        ClientWidth = 317
         TabOrder = 0
         object clbFilter: TCheckListBox
           Left = 5
           Height = 96
           Top = 5
-          Width = 314
+          Width = 307
           Align = alClient
           ItemHeight = 0
           ParentFont = False
@@ -160,7 +159,7 @@ object Form1: TForm1
         Left = 0
         Height = 6
         Top = 555
-        Width = 328
+        Width = 321
         Align = alBottom
         ResizeAnchor = akBottom
       end
@@ -168,12 +167,12 @@ object Form1: TForm1
     object tsScanResults: TTabSheet
       Caption = 'Results'
       ClientHeight = 692
-      ClientWidth = 328
+      ClientWidth = 321
       object lbClusters: TListBox
         Left = 0
         Height = 568
         Top = 32
-        Width = 328
+        Width = 321
         Align = alClient
         ItemHeight = 0
         ParentFont = False
@@ -187,7 +186,7 @@ object Form1: TForm1
       object ToolBar1: TToolBar
         Left = 0
         Top = 0
-        Width = 328
+        Width = 321
         ButtonHeight = 28
         ButtonWidth = 50
         Caption = 'ToolBar1'
@@ -232,7 +231,7 @@ object Form1: TForm1
         Left = 0
         Height = 6
         Top = 600
-        Width = 328
+        Width = 321
         Align = alBottom
         ResizeAnchor = akBottom
       end
@@ -240,7 +239,7 @@ object Form1: TForm1
         Left = 0
         Height = 86
         Top = 606
-        Width = 328
+        Width = 321
         Align = alBottom
         ParentFont = False
         ScrollBars = ssAutoVertical
@@ -249,33 +248,34 @@ object Form1: TForm1
     end
   end
   object Splitter1: TSplitter
-    Left = 362
+    Left = 355
     Height = 700
     Top = 0
     Width = 6
+    MinSize = 355
   end
   object pnWorkspace: TPanel
-    Left = 368
+    Left = 361
     Height = 700
     Top = 0
-    Width = 832
+    Width = 839
     Align = alClient
     BorderSpacing.CellAlignVertical = ccaCenter
     BevelOuter = bvNone
     ClientHeight = 700
-    ClientWidth = 832
+    ClientWidth = 839
     ParentFont = False
     TabOrder = 0
     object Panel1: TPanel
       Left = 0
       Height = 95
       Top = 0
-      Width = 832
+      Width = 839
       Align = alTop
       BevelOuter = bvNone
       ChildSizing.HorizontalSpacing = 5
       ClientHeight = 95
-      ClientWidth = 832
+      ClientWidth = 839
       TabOrder = 1
       object GroupBox4: TGroupBox
         Left = 0
@@ -447,7 +447,7 @@ object Form1: TForm1
         Left = 0
         Height = 5
         Top = 90
-        Width = 832
+        Width = 839
         Align = alBottom
         Shape = bsSpacer
       end
@@ -456,18 +456,18 @@ object Form1: TForm1
       Left = 0
       Height = 605
       Top = 95
-      Width = 832
+      Width = 839
       Align = alClient
       BevelOuter = bvNone
       ClientHeight = 605
-      ClientWidth = 832
+      ClientWidth = 839
       ParentFont = False
       TabOrder = 0
       object imHoverImage: TImage
         Left = 0
         Height = 585
         Top = 0
-        Width = 832
+        Width = 839
         Align = alClient
         Proportional = True
         Stretch = True
@@ -476,7 +476,7 @@ object Form1: TForm1
         Left = 0
         Height = 20
         Top = 585
-        Width = 832
+        Width = 839
         Align = alBottom
         Caption = 'lbHoverfile'
         ParentFont = False

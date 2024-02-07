@@ -10,9 +10,9 @@ uses
 
 type
 
-  { TForm1 }
+  { TfmMain }
 
-  TForm1 = class(TForm)
+  TfmMain = class(TForm)
     pnWorkspace: TPanel;
     clbFilter: TCheckListBox;
     pbClassifier: TProgressBar;
@@ -89,7 +89,7 @@ type
   end;
 
 var
-  Form1: TForm1;
+  fmMain: TfmMain;
 
 implementation
 
@@ -106,9 +106,9 @@ const
   IMAGE_SCAN_STOP  = 1;
   IMAGE_SCAN_RERUN = 2;
 
-{ TForm1 }
+{ TfmMain }
 
-procedure TForm1.FormCreate(Sender: TObject);
+procedure TfmMain.FormCreate(Sender: TObject);
 var
   i: Integer;
   tn, ex: String;
@@ -138,13 +138,13 @@ begin
   frmPathEditor1.Add(ExpandFileName(ConcatPaths([ExtractFilePath(ParamStr(0)),'..\data'])));
 end;
 
-procedure TForm1.FormDestroy(Sender: TObject);
+procedure TfmMain.FormDestroy(Sender: TObject);
 begin
   FreeClassifier;
   FreeData;
 end;
 
-procedure TForm1.ImageLoadFinished;
+procedure TfmMain.ImageLoadFinished;
 begin
   pbLoader.Position:= pbLoader.Position + 1;
   lbStatus.Caption:= Format('%d/%d',[pbLoader.Position,pbLoader.Max]);
@@ -152,7 +152,7 @@ begin
     fClassifier.WakeEvent.SetEvent;
 end;
 
-procedure TForm1.ImageClassifierFinished;
+procedure TfmMain.ImageClassifierFinished;
 var
   c: TCluster;
   oldtop: integer;
@@ -183,7 +183,7 @@ begin
 
 end;
 
-procedure TForm1.FreeData;
+procedure TfmMain.FreeData;
 var
   i: integer;
   im: PImageInfoItem;
@@ -196,7 +196,7 @@ begin
   SetLength(fImageInfos, 0);
 end;
 
-procedure TForm1.FreeClassifier;
+procedure TfmMain.FreeClassifier;
 begin
   if Assigned(fClassifier) then begin
     fClassifier.Terminate;
@@ -206,7 +206,7 @@ begin
   lbClusters.Clear;
 end;
 
-function TForm1.GetCheckedFilters: string;
+function TfmMain.GetCheckedFilters: string;
 var
   i: Integer;
   ex: String;
@@ -221,7 +221,7 @@ begin
   SetLength(Result, Length(Result)-1);
 end;
 
-procedure TForm1.RunLoaderAndWait;
+procedure TfmMain.RunLoaderAndWait;
 var
   scanners: array of TFileScannerThread;
   scanner: TFileScannerThread;
@@ -331,7 +331,7 @@ begin
   end;
 end;
 
-procedure TForm1.RunClassifier;
+procedure TfmMain.RunClassifier;
 begin
   FreeClassifier;
   pbClassifier.Position:= 0;
@@ -345,7 +345,7 @@ begin
   fClassifier.Start;
 end;
 
-procedure TForm1.btnStartStopScannerClick(Sender: TObject);
+procedure TfmMain.btnStartStopLoaderClick(Sender: TObject);
 begin
   if btnStartStopLoader.ImageIndex = IMAGE_SCAN_START then begin
     pcSidebar.ActivePage:= tsScanSetup;
@@ -359,12 +359,12 @@ begin
   end;
 end;
 
-procedure TForm1.btnRecompareClick(Sender: TObject);
+procedure TfmMain.btnRecompareClick(Sender: TObject);
 begin
   RunClassifier;
 end;
 
-function TForm1.ImageAtXY(X, Y: integer; out ICluster, IImage: integer): boolean;
+function TfmMain.ImageAtXY(X, Y: integer; out ICluster, IImage: integer): boolean;
 var
   c: TCluster;
   i, j: integer;
@@ -384,7 +384,7 @@ begin
   end;
 end;
 
-procedure TForm1.PrintMemStats;
+procedure TfmMain.PrintMemStats;
   function StrSize(s: String): PtrUInt;
   begin
     if s='' then
@@ -424,7 +424,7 @@ begin
   meLog.Lines.Add('CurrHeapUsed = %d k', [hs.CurrHeapUsed shr 10]);
 end;
 
-procedure TForm1.lbClustersMouseMove(Sender: TObject; Shift: TShiftState; X,
+procedure TfmMain.lbClustersMouseMove(Sender: TObject; Shift: TShiftState; X,
   Y: Integer);
 var
   index, i: Integer;
@@ -469,7 +469,7 @@ begin
     imHoverImage.Picture.Clear;
 end;
 
-procedure TForm1.lbClustersDrawItem(Control: TWinControl; Index: Integer;
+procedure TfmMain.lbClustersDrawItem(Control: TWinControl; Index: Integer;
   ARect: TRect; State: TOwnerDrawState);
 var
   c: TCluster;
@@ -501,13 +501,13 @@ begin
   end;
 end;
 
-procedure TForm1.lbClustersMeasureItem(Control: TWinControl; Index: Integer;
+procedure TfmMain.lbClustersMeasureItem(Control: TWinControl; Index: Integer;
   var AHeight: Integer);
 begin
   AHeight:= seThumbSize.Value + 2;
 end;
 
-procedure TForm1.lbClustersMouseDown(Sender: TObject; Button: TMouseButton;
+procedure TfmMain.lbClustersMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
   index, i: integer;
@@ -527,13 +527,13 @@ begin
   lbClusters.Invalidate;
 end;
 
-procedure TForm1.tbAutoMarkClick(Sender: TObject);
+procedure TfmMain.tbAutoMarkClick(Sender: TObject);
 begin
   frmAutoMark.ShowModal;
   lbClusters.Invalidate;
 end;
 
-procedure TForm1.tbUnMarkClick(Sender: TObject);
+procedure TfmMain.tbUnMarkClick(Sender: TObject);
 var
   idx, i: Integer;
   c: TCluster;
@@ -550,7 +550,7 @@ begin
   lbClusters.Invalidate;
 end;
 
-procedure TForm1.tbUnIgnoreClick(Sender: TObject);
+procedure TfmMain.tbUnIgnoreClick(Sender: TObject);
 var
   idx, i: Integer;
   c: TCluster;
@@ -567,7 +567,7 @@ begin
   lbClusters.Invalidate;
 end;
 
-procedure TForm1.tbMarkedTrashClick(Sender: TObject);
+procedure TfmMain.tbMarkedTrashClick(Sender: TObject);
 var
   marked: TCluster;
   idx, i: Integer;

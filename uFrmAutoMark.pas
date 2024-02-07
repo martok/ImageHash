@@ -41,7 +41,9 @@ const
 
 procedure TfrmAutoMark.btnMarkClick(Sender: TObject);
 var
-  list: TListBox;
+  list: TListBox; 
+  sourcePaths: TStrings;
+  imageInfos: PImageInfoList;
   c: TCluster;
   skipstate: set of TImageMark;
   idx, i, j, m: integer;
@@ -54,8 +56,8 @@ var
     a1, a2: TSearchRec;
     x,y: integer;
   begin
-    im1:= @Form1.ImageInfos[Item1];
-    im2:= @Form1.ImageInfos[Item2];
+    im1:= @imageInfos[Item1];
+    im2:= @imageInfos[Item2];
     if cbLargerResolution.Checked then begin
       x:= im1^.ImgW*im1^.ImgH;
       y:= im2^.ImgW*im2^.ImgH;
@@ -73,8 +75,8 @@ var
         Exit(1);
     end;
     if cbLargerFile.Checked or cbOlderFile.Checked then begin
-      GetFileInfos(im1^.FullName(Form1.frmPathEditor1.Items), a1);
-      GetFileInfos(im2^.FullName(Form1.frmPathEditor1.Items), a2);
+      GetFileInfos(im1^.FullName(sourcePaths), a1);
+      GetFileInfos(im2^.FullName(sourcePaths), a2);
     end;
     if cbLargerFile.Checked then begin
       if a1.Size>a2.Size then
@@ -100,7 +102,9 @@ var
   end;
 
 begin
-  list:= Form1.lbClusters as TListBox;
+  list:= fmMain.lbClusters as TListBox;
+  imageInfos:= PImageInfoList(@fmMain.ImageInfos[0]);
+  sourcePaths:= fmMain.frmPathEditor1.Items;
   for idx:= 0 to list.Count - 1 do begin
     c:= list.Items.Objects[idx] as TCluster;
     if cbOnlyUnmarked.Checked then
@@ -109,7 +113,7 @@ begin
       skipstate:= [imIgnore];
     b:= false;
     for i in c do begin
-      im:= @Form1.ImageInfos[i];
+      im:= @imageInfos[i];
       b:= im^.Mark in skipstate;
       if b then
         break;
@@ -118,7 +122,7 @@ begin
       continue;
     if (specialize TListTool<Integer>).FindSmallestValue(c, @Compare, m) >= 0 then begin
       for i in c do begin
-        im:= @Form1.ImageInfos[i];  
+        im:= @imageInfos[i];
         if i = m then
           im^.Mark:= imUnmarked
         else
@@ -126,7 +130,7 @@ begin
       end;
     end;
   end;
-  Form1.lbClusters.Refresh;
+  list.Refresh;
 end;
 
 end.

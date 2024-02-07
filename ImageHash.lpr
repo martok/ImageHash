@@ -37,7 +37,7 @@ begin
   RequireDerivedFormResource:=True;
   Application.MainFormOnTaskBar:=True;
   Application.Initialize;
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TfmMain, fmMain);
   Application.CreateForm(TfrmAutoMark, frmAutoMark);
   Application.Run;
 end.
