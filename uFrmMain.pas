@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, GraphType, CheckLst, Spin, ComCtrls,
-  Buttons, uThreadHashing, uThreadClassifier, uFrmPathEditor, Types;
+  Buttons, uThreadHashing, uThreadClassifier, uFrmPathEditor, uProgramInfoDialog, Types;
 
 type
 
@@ -57,6 +57,8 @@ type
     Bevel1: TBevel;
     ToolButton2: TToolButton;
     tbMarkInfo: TToolButton;
+    InfoDialog1: TInfoDialog;
+    btnInfo: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure lbClustersDrawItem(Control: TWinControl; Index: Integer;
       ARect: TRect; State: TOwnerDrawState);
@@ -74,6 +76,8 @@ type
     procedure tbMarkedTrashClick(Sender: TObject);
     procedure btnStartStopLoaderClick(Sender: TObject);
     procedure tbMarkInfoClick(Sender: TObject);
+    procedure FormResize(Sender: TObject);
+    procedure btnInfoClick(Sender: TObject);
   private
     fClassifier: TClassifierThread;
     fImageInfos: TImageInfoList;
@@ -136,6 +140,7 @@ begin
   lbHoverfile.Caption:= '';
   lbStatus.Caption:= 'Waiting...';
   btnStartStopLoader.ImageIndex:= IMAGE_SCAN_START;
+  btnRecompare.Enabled:= false;
 
   frmPathEditor1.Clear;
   frmPathEditor1.Add(ExpandFileName(ConcatPaths([ExtractFilePath(ParamStr(0)),'..\data'])));
@@ -279,6 +284,7 @@ begin
 
     lbStatus.Caption:= 'Setup classifier...';
     RunClassifier;
+    btnRecompare.Enabled:= true;
 
     lbStatus.Caption:= 'Setup loader...';
     SetLength(loaders, seThreads.Value);
@@ -615,6 +621,23 @@ begin
              'RMB: ignore cluster for AutoMark' + sLineBreak +
              'MMB: open image in default app',
              mtInformation, [mbOK], 0);
+end;
+
+procedure TfmMain.FormResize(Sender: TObject);
+var
+  pt: TPoint;
+begin
+  pt:= pcSidebar.ActivePage.BoundsRect.TopLeft;
+  pt:= pcSidebar.ClientToParent(pt);
+  btnInfo.Width:= pt.X - GetSystemMetrics(SM_CXDLGFRAME);
+  btnInfo.Height:= btnInfo.Width;
+end;
+
+procedure TfmMain.btnInfoClick(Sender: TObject);
+begin
+  InfoDialog1.AppTitle:= Application.Title;
+  InfoDialog1.WebURL:= 'https://github.com/martok/ImageHash';
+  InfoDialog1.Execute;
 end;
 
 end.

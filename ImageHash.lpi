@@ -14,6 +14,13 @@
       <UseXPManifest Value="True"/>
       <Icon Value="0"/>
     </General>
+    <VersionInfo>
+      <UseVersionInfo Value="True"/>
+      <AutoIncrementBuild Value="True"/>
+      <MajorVersionNr Value="1"/>
+      <BuildNr Value="15"/>
+      <StringTable CompanyName="Martok" FileDescription="ImageHash"/>
+    </VersionInfo>
     <BuildModes Count="2">
       <Item1 Name="Default" Default="True"/>
       <Item2 Name="Win64">
@@ -62,10 +69,13 @@
     <RunParams>
       <FormatVersion Value="2"/>
     </RunParams>
-    <RequiredPackages Count="1">
+    <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="LCL"/>
+        <PackageName Value="bitSpaceControls"/>
       </Item1>
+      <Item2>
+        <PackageName Value="LCL"/>
+      </Item2>
     </RequiredPackages>
     <Units Count="11">
       <Unit0>
