@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, GraphType, CheckLst, Spin, ComCtrls,
-  uThreadHashing, uThreadClassifier, uFrmPathEditor, uGridLayoutPanel, Types;
+  Buttons, uThreadHashing, uThreadClassifier, uFrmPathEditor, Types;
 
 type
 
@@ -26,7 +26,6 @@ type
     lbClusters: TListBox;
     meLog: TMemo;
     Splitter1: TSplitter;
-    btnRecompare: TButton;
     Label3: TLabel;
     seTolerance: TSpinEdit;
     seMinDimension: TSpinEdit;
@@ -45,27 +44,22 @@ type
     Panel5: TGroupBox;
     Panel1: TPanel;
     GroupBox2: TGroupBox;
-    GridLayoutPanel1: TGridLayoutPanel;
     Splitter2: TSplitter;
     GroupBox3: TGroupBox;
-    GridLayoutPanel2: TGridLayoutPanel;
     GroupBox4: TGroupBox;
-    GridLayoutPanel3: TGridLayoutPanel;
-    btnStartScanners: TButton;
-    btnStopScanner: TButton;
     pbLoader: TProgressBar;
     lbStatus: TLabel;
-    Bevel1: TBevel;
-    Bevel2: TBevel;
     Splitter3: TSplitter;
     frmPathEditor1: TfrmPathEditor;
+    btnStartStopLoader: TBitBtn;
+    ilButtons: TImageList;
+    btnRecompare: TBitBtn;
+    Bevel1: TBevel;
     procedure FormCreate(Sender: TObject);
-    procedure btnStartScannersClick(Sender: TObject);
     procedure lbClustersDrawItem(Control: TWinControl; Index: Integer;
       ARect: TRect; State: TOwnerDrawState);
     procedure lbClustersMeasureItem(Control: TWinControl; Index: Integer;
       var AHeight: Integer);
-    procedure btnStopScannerClick(Sender: TObject);
     procedure lbClustersMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
     procedure FormDestroy(Sender: TObject);
@@ -76,6 +70,7 @@ type
     procedure tbUnMarkClick(Sender: TObject);
     procedure tbUnIgnoreClick(Sender: TObject);
     procedure tbMarkedTrashClick(Sender: TObject);
+    procedure btnStartStopLoaderClick(Sender: TObject);
   private
     fClassifier: TClassifierThread;
     fImageInfos: TImageInfoList;
@@ -106,7 +101,10 @@ uses
 
 const
   IMAGE_MARK_DELETE = 0;
-  IMAGE_MARK_IGNORE = 1;
+  IMAGE_MARK_IGNORE = 1;   
+  IMAGE_SCAN_START = 0;
+  IMAGE_SCAN_STOP  = 1;
+  IMAGE_SCAN_RERUN = 2;
 
 { TForm1 }
 
@@ -134,8 +132,7 @@ begin
   meLog.Clear;
   lbHoverfile.Caption:= '';
   lbStatus.Caption:= 'Waiting...';
-  btnStopScanner.Enabled:= false;
-  btnStartScanners.Enabled:= true;
+  btnStartStopLoader.ImageIndex:= IMAGE_SCAN_START;
 
   frmPathEditor1.Clear;
   frmPathEditor1.Add(ExpandFileName(ConcatPaths([ExtractFilePath(ParamStr(0)),'..\data'])));
@@ -238,8 +235,7 @@ begin
   FreeClassifier;
   FreeData;
 
-  btnStartScanners.Enabled:= false;
-  btnStopScanner.Enabled:= true;
+  btnStartStopLoader.ImageIndex:= IMAGE_SCAN_STOP;
   tsScanSetup.Enabled:= false;
   try
     fAbortFlag:= false;
@@ -331,8 +327,7 @@ begin
     PrintMemStats;
   finally
     tsScanSetup.Enabled:= True;
-    btnStopScanner.Enabled:= false;
-    btnStartScanners.Enabled:= true;
+    btnStartStopLoader.ImageIndex:= IMAGE_SCAN_START;
   end;
 end;
 
@@ -350,26 +345,24 @@ begin
   fClassifier.Start;
 end;
 
-procedure TForm1.btnStartScannersClick(Sender: TObject);
+procedure TForm1.btnStartStopScannerClick(Sender: TObject);
 begin
-  pcSidebar.ActivePage:= tsScanSetup;
-  if not frmPathEditor1.ValidatePaths then
-    exit;
+  if btnStartStopLoader.ImageIndex = IMAGE_SCAN_START then begin
+    pcSidebar.ActivePage:= tsScanSetup;
+    if not frmPathEditor1.ValidatePaths then
+      exit;
 
-  pcSidebar.ActivePage:= tsScanResults;
-  RunLoaderAndWait;
-end;
-
-procedure TForm1.btnStopScannerClick(Sender: TObject);
-begin
-  fAbortFlag:= true;
+    pcSidebar.ActivePage:= tsScanResults;
+    RunLoaderAndWait;
+  end else begin
+    fAbortFlag:= true;
+  end;
 end;
 
 procedure TForm1.btnRecompareClick(Sender: TObject);
 begin
   RunClassifier;
 end;
-
 
 function TForm1.ImageAtXY(X, Y: integer; out ICluster, IImage: integer): boolean;
 var
