@@ -524,8 +524,8 @@ begin
   im:= @fClassifier.List[c[i]];
   case Button of
     mbLeft: if im^.Mark = imDelete then im^.Mark:= imUnmarked else im^.Mark:= imDelete;
-    mbMiddle: im^.Mark:= imIgnore;
-    mbRight: OpenDocument(im^.FullName(frmPathEditor1.Items));
+    mbMiddle: OpenDocument(im^.FullName(frmPathEditor1.Items));
+    mbRight: im^.Mark:= imIgnore;
   end;
   lbClusters.Invalidate;
 end;
@@ -612,8 +612,8 @@ procedure TfmMain.tbMarkInfoClick(Sender: TObject);
 begin
   MessageDlg('Select images to remove or keep.' + sLineBreak +
              'LMB: toggle remove/keep' + sLineBreak +
-             'MMB: ignore cluster for AutoMark' + sLineBreak +
-             'RMB: open image in default app',
+             'RMB: ignore cluster for AutoMark' + sLineBreak +
+             'MMB: open image in default app',
              mtInformation, [mbOK], 0);
 end;
 
