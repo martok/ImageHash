@@ -55,6 +55,8 @@ type
     ilButtons: TImageList;
     btnRecompare: TBitBtn;
     Bevel1: TBevel;
+    ToolButton2: TToolButton;
+    tbMarkInfo: TToolButton;
     procedure FormCreate(Sender: TObject);
     procedure lbClustersDrawItem(Control: TWinControl; Index: Integer;
       ARect: TRect; State: TOwnerDrawState);
@@ -71,6 +73,7 @@ type
     procedure tbUnIgnoreClick(Sender: TObject);
     procedure tbMarkedTrashClick(Sender: TObject);
     procedure btnStartStopLoaderClick(Sender: TObject);
+    procedure tbMarkInfoClick(Sender: TObject);
   private
     fClassifier: TClassifierThread;
     fImageInfos: TImageInfoList;
@@ -603,6 +606,15 @@ begin
     FreeAndNil(marked);
   end;
   RunClassifier;
+end; 
+
+procedure TfmMain.tbMarkInfoClick(Sender: TObject);
+begin
+  MessageDlg('Select images to remove or keep.' + sLineBreak +
+             'LMB: toggle remove/keep' + sLineBreak +
+             'MMB: ignore cluster for AutoMark' + sLineBreak +
+             'RMB: open image in default app',
+             mtInformation, [mbOK], 0);
 end;
 
 end.

@@ -9,20 +9,19 @@ object frmAutoMark: TfrmAutoMark
   ClientWidth = 303
   DesignTimePPI = 120
   Position = poScreenCenter
-  LCLVersion = '3.99.0.0'
   object Label1: TLabel
     Left = 16
     Height = 20
     Top = 16
-    Width = 96
-    Caption = 'Prefer to keep:'
+    Width = 232
+    Caption = 'Prefer to keep (in order of priority):'
     ParentColor = False
   end
   object cbLargerResolution: TCheckBox
     Left = 48
     Height = 24
     Top = 48
-    Width = 140
+    Width = 137
     Caption = 'Larger Resolution'
     Checked = True
     State = cbChecked
@@ -32,7 +31,7 @@ object frmAutoMark: TfrmAutoMark
     Left = 48
     Height = 24
     Top = 80
-    Width = 169
+    Width = 166
     Caption = 'Compressed File Type'
     Checked = True
     State = cbChecked
@@ -42,7 +41,7 @@ object frmAutoMark: TfrmAutoMark
     Left = 48
     Height = 24
     Top = 112
-    Width = 124
+    Width = 121
     Caption = 'Larger File Size'
     Checked = True
     State = cbChecked
@@ -52,7 +51,7 @@ object frmAutoMark: TfrmAutoMark
     Left = 48
     Height = 24
     Top = 176
-    Width = 176
+    Width = 173
     Caption = 'Higher Directory Order'
     Checked = True
     State = cbChecked
@@ -81,7 +80,7 @@ object frmAutoMark: TfrmAutoMark
     Left = 16
     Height = 24
     Top = 248
-    Width = 197
+    Width = 194
     Caption = 'Only in Unmarked Clusters'
     Checked = True
     State = cbChecked
@@ -91,7 +90,7 @@ object frmAutoMark: TfrmAutoMark
     Left = 48
     Height = 24
     Top = 144
-    Width = 88
+    Width = 85
     Caption = 'Older File'
     Checked = True
     State = cbChecked

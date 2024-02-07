@@ -9,6 +9,7 @@ object fmMain: TfmMain
   Constraints.MinWidth = 1000
   DesignTimePPI = 120
   Position = poDefaultPosOnly
+  ShowHint = True
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   object pcSidebar: TPageControl
@@ -58,11 +59,12 @@ object fmMain: TfmMain
           AnchorSideRight.Side = asrBottom
           Left = 161
           Height = 28
+          Hint = 'Number of threads to use for loader.'#13#10'Recommended number is one less than number of CPU cores.'
           Top = 5
           Width = 151
           Anchors = [akTop, akRight]
           Constraints.MinWidth = 130
-          MaxValue = 10
+          MaxValue = 16
           MinValue = 1
           ParentFont = False
           TabOrder = 0
@@ -88,6 +90,7 @@ object fmMain: TfmMain
           AnchorSideRight.Side = asrBottom
           Left = 161
           Height = 28
+          Hint = 'Thumbnail size for cluster list.'
           Top = 38
           Width = 151
           Anchors = [akTop, akRight]
@@ -146,6 +149,7 @@ object fmMain: TfmMain
         object clbFilter: TCheckListBox
           Left = 5
           Height = 96
+          Hint = 'Select which file types to load.'
           Top = 5
           Width = 307
           Align = alClient
@@ -196,18 +200,21 @@ object fmMain: TfmMain
         TabOrder = 1
         object tbAutoMark: TToolButton
           Left = 1
+          Hint = 'Automatically mark images in clusters.'
           Top = 0
           Caption = 'AutoMark'
           OnClick = tbAutoMarkClick
         end
         object tbUnMark: TToolButton
           Left = 75
+          Hint = 'Remove all marks.'
           Top = 0
           Caption = 'UnMark'
           OnClick = tbUnMarkClick
         end
         object tbUnIgnore: TToolButton
           Left = 135
+          Hint = 'Remove all "ignore" marks.'
           Top = 0
           Caption = 'UnIgnore'
           OnClick = tbUnIgnoreClick
@@ -221,9 +228,24 @@ object fmMain: TfmMain
         end
         object tbMarkedTrash: TToolButton
           Left = 210
+          Hint = 'Move all images marked as trash to the recycler.'
           Top = 0
           Caption = 'Trash'
           OnClick = tbMarkedTrashClick
+        end
+        object ToolButton2: TToolButton
+          Left = 260
+          Height = 28
+          Top = 0
+          Caption = 'ToolButton2'
+          Style = tbsSeparator
+        end
+        object tbMarkInfo: TToolButton
+          Left = 268
+          Hint = 'Quick Info.'
+          Top = 0
+          Caption = '?'
+          OnClick = tbMarkInfoClick
         end
       end
       object Splitter3: TSplitter
@@ -238,10 +260,12 @@ object fmMain: TfmMain
       object meLog: TMemo
         Left = 0
         Height = 86
+        Hint = 'Technical information'
         Top = 606
         Width = 321
         Align = alBottom
         ParentFont = False
+        ReadOnly = True
         ScrollBars = ssAutoVertical
         TabOrder = 2
       end
@@ -326,6 +350,7 @@ object fmMain: TfmMain
           AnchorSideBottom.Side = asrBottom
           Left = 5
           Height = 55
+          Hint = 'Start/Stop the Loader process.'
           Top = 5
           Width = 55
           Anchors = [akTop, akLeft, akBottom]
@@ -367,6 +392,7 @@ object fmMain: TfmMain
           AnchorSideBottom.Side = asrBottom
           Left = 65
           Height = 28
+          Hint = 'Difference betwen images considered similar.'#13#10'0 = (almost) only exact matches'#13#10'16 = almost everything'
           Top = 32
           Width = 80
           Anchors = [akLeft, akBottom]
@@ -396,6 +422,7 @@ object fmMain: TfmMain
           AnchorSideBottom.Side = asrBottom
           Left = 150
           Height = 28
+          Hint = 'Only process images larger in at least one dimension than this.'
           Top = 32
           Width = 80
           Anchors = [akLeft, akBottom]
@@ -433,6 +460,7 @@ object fmMain: TfmMain
           AnchorSideBottom.Side = asrBottom
           Left = 5
           Height = 55
+          Hint = 'Re-Run the classifier with modified settings.'
           Top = 5
           Width = 55
           Anchors = [akTop, akLeft, akBottom]
