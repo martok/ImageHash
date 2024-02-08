@@ -3,7 +3,11 @@ Like [Visipics](http://www.visipics.info/index.php?title=Main_Page), but faster.
 
 Written in Lazarus and Freepascal.
 
-## Credits:
+## Installation
+
+This program does not require installation (just extract to any directory).
+
+## Credits
 
 The image hashing algorithm (DHash) is by Dr. Neal Krawetz, who writes at Hacker Factor.
 
@@ -15,3 +19,7 @@ Relevant articles:
 The TurboJPEG bindings are by D. R. Commander.
 
  * https://www.djmaster.com/freepascal/bindings/turbojpeg.php
+
+## License
+
+The source code is licensed under the MIT license.
