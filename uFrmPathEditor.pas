@@ -19,6 +19,7 @@ type
     procedure mePathsClick(Sender: TObject);
     procedure mePathsKeyPress(Sender: TObject; var Key: char);
     procedure mePathsEditingDone(Sender: TObject);
+    procedure mePathsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     function GetItems: TStrings; inline;
     procedure SetLine(Line: integer);
@@ -36,6 +37,9 @@ type
 implementation
 
 {$R *.lfm}
+
+uses
+  LCLType;
 
 { TfrmPathEditor }
 
@@ -158,6 +162,40 @@ begin
   CursorMoved;           
   if GetLine(y) then
     SelectLine(y);
+end;
+
+procedure TfrmPathEditor.mePathsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+var
+  y: integer;
+begin
+  case Key of
+    VK_DELETE: begin
+      if [ssCtrl, ssShift] = Shift then begin
+        if GetLine(y) then
+          mePaths.Lines.Delete(y);
+      end;
+    end;
+    VK_ESCAPE: begin
+      if GetLine(y) then
+        SelectLine(y);
+    end;
+    VK_UP,
+    VK_DOWN: begin     
+      if [ssCtrl, ssShift] = Shift then begin
+        if GetLine(y) then begin
+          if (y > 0) and (Key = VK_UP) then begin
+            mePaths.Lines.Exchange(y, y-1);
+            dec(y);
+          end else
+          if (y < mePaths.Lines.Count - 1) and (Key = VK_DOWN) then begin
+            mePaths.Lines.Exchange(y, y+1);
+            inc(y);
+          end;
+          SelectLine(y);
+        end;
+      end;
+    end;
+  end;
 end;
 
 end.

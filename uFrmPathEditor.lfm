@@ -14,6 +14,7 @@ object frmPathEditor: TfrmPathEditor
   object mePaths: TMemo
     Left = 0
     Height = 268
+    Hint = 'Ctrl+Shift+Del = Delete folder line'#13#10'Ctrl+Shift+Up/Down = Move folder line'#13#10'Esc = Select current folder line'
     Top = 32
     Width = 400
     Align = alClient
@@ -25,6 +26,7 @@ object frmPathEditor: TfrmPathEditor
     OnChange = mePathsChange
     OnClick = mePathsClick
     OnEditingDone = mePathsEditingDone
+    OnKeyDown = mePathsKeyDown
     OnKeyPress = mePathsKeyPress
   end
   object dePaths: TDirectoryEdit
