@@ -1,11 +1,11 @@
 object frmAutoMark: TfrmAutoMark
   Left = 507
-  Height = 294
+  Height = 279
   Top = 188
   Width = 303
   BorderStyle = bsDialog
   Caption = 'AutoMark'
-  ClientHeight = 294
+  ClientHeight = 279
   ClientWidth = 303
   DesignTimePPI = 120
   Position = poScreenCenter
@@ -63,6 +63,7 @@ object frmAutoMark: TfrmAutoMark
     Top = 216
     Width = 94
     Caption = 'Mark'
+    ModalResult = 1
     TabOrder = 5
     OnClick = btnMarkClick
   end

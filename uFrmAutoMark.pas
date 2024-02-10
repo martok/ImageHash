@@ -46,7 +46,7 @@ var
   imageInfos: PImageInfoList;
   c: TCluster;
   skipstate: set of TImageMark;
-  idx, i, j, m: integer;
+  idx, i, j, m, cluster_seen, cluster_skipped, marked_delete: integer;
   im: PImageInfoItem;
   b: boolean;
 
@@ -105,12 +105,16 @@ begin
   list:= fmMain.lbClusters as TListBox;
   imageInfos:= PImageInfoList(@fmMain.ImageInfos[0]);
   sourcePaths:= fmMain.frmPathEditor1.Items;
+  if cbOnlyUnmarked.Checked then
+    skipstate:= [imIgnore, imDelete]
+  else
+    skipstate:= [imIgnore];
+  cluster_seen:= 0;
+  cluster_skipped:= 0;
+  marked_delete:= 0;
   for idx:= 0 to list.Count - 1 do begin
     c:= list.Items.Objects[idx] as TCluster;
-    if cbOnlyUnmarked.Checked then
-      skipstate:= [imIgnore, imDelete]
-    else
-      skipstate:= [imIgnore];
+    inc(cluster_seen);
     b:= false;
     for i in c do begin
       im:= @imageInfos[i];
@@ -118,19 +122,27 @@ begin
       if b then
         break;
     end;
-    if b then
+    if b then begin
+      inc(cluster_skipped);
       continue;
+    end;
     if (specialize TListTool<Integer>).FindSmallestValue(c, @Compare, m) >= 0 then begin
       for i in c do begin
         im:= @imageInfos[i];
         if i = m then
           im^.Mark:= imUnmarked
-        else
+        else begin
           im^.Mark:= imDelete;
+          inc(marked_delete);
+        end;
       end;
     end;
   end;
-  list.Refresh;
+  list.Invalidate;
+  MessageDlg(Format('Evaluated clusters: %d'+sLineBreak+
+             'Skipped clusters: %d'+sLineBreak+
+             'Marked for deletion: %d', [cluster_seen, cluster_skipped, marked_delete]),
+              mtInformation, [mbOK], 0);
 end;
 
 end.
