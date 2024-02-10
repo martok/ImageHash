@@ -481,7 +481,9 @@ begin
   if FindFirst(fullname, faAnyFile, sr) = 0 then begin
     img:= imgLoadFromFile(fullname);
     try
-        lbHoverfile.Caption:= Format('%s (%dkb - %dx%dpx - %s)', [fullname, sr.Size div 1024, img.Width, img.Height, DateTimeToStr(sr.TimeStamp)]);
+        lbHoverfile.Caption:= Format('%s - %dkb - %dx%dpx'+sLineBreak+
+                                     '%s',
+                                     [DateTimeToStr(sr.TimeStamp), sr.Size div 1024, img.Width, img.Height, fullname]);
       imHoverImage.Picture.Bitmap.LoadFromIntfImage(img);
     finally
       FreeAndNil(img);
