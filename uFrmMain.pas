@@ -601,15 +601,22 @@ var
   idx, i: Integer;
   c: TCluster;
   im: PImageInfoItem;
+  fn: String;
+  names: TStringArray = nil;
 begin
   marked:= TCluster.Create;
   try
+    Screen.BeginWaitCursor;
+    // collect marked and currently existing files
     for idx:= 0 to lbClusters.Count - 1 do begin
       c:= lbClusters.Items.Objects[idx] as TCluster;
       for i in c do begin
         im:= @ImageInfos[i];
-        if im^.Mark = imDelete then
-          marked.Add(i);
+        if im^.Mark = imDelete then begin
+          fn:= im^.FullName(frmPathEditor1.Items);
+          if FileExists(fn) then
+            marked.Add(i);
+        end;
       end;
     end;
     if marked.Count = 0 then begin
@@ -618,16 +625,23 @@ begin
     end;
     if MessageDlg(Format('%d items selected for deletion, continue?', [marked.Count]), mtInformation, mbYesNo, 0) <> mrYes then
       exit;
+    // sort and collect names
     marked.Sort;
+    SetLength(names, marked.Count);
+    for i:= 0 to high(names) do
+      names[i]:= ImageInfos[marked[i]].FullName(frmPathEditor1.Items);
+    SendFilesToTrash(names);
+    // files that were successfully deleted can be freed
     for i:= marked.Count-1 downto 0 do begin
       idx:= marked[i];
       im:= @ImageInfos[idx];
-      if SendFilesToTrash([im^.FullName(frmPathEditor1.Items)]) then begin
+      if not FileExists(im^.FullName(frmPathEditor1.Items)) then begin
         im^.Done;
         Delete(fImageInfos, idx, 1);
       end;
     end;
   finally
+    Screen.EndWaitCursor;
     FreeAndNil(marked);
   end;
   RunClassifier;
