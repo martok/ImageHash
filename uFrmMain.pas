@@ -78,10 +78,12 @@ type
     procedure tbMarkInfoClick(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure btnInfoClick(Sender: TObject);
+    procedure lbClustersMouseLeave(Sender: TObject);
   private
     fClassifier: TClassifierThread;
     fImageInfos: TImageInfoList;
     fAbortFlag: boolean;
+    fHoverImage: PImageInfoItem;
     procedure FreeData;
     procedure FreeClassifier;
     function GetCheckedFilters: string;
@@ -90,6 +92,7 @@ type
     procedure ImageLoadFinished;
     procedure ImageClassifierFinished;
     function ImageAtXY(X, Y: integer; out ICluster, IImage: integer): boolean;
+    procedure HoveredClear;
     procedure PrintMemStats;
   public
     property ImageInfos: TImageInfoList read fImageInfos;
@@ -437,6 +440,20 @@ begin
   meLog.Lines.Add('CurrHeapUsed = %d k', [hs.CurrHeapUsed shr 10]);
 end;
 
+procedure TfmMain.HoveredClear;
+begin
+  imHoverImage.Picture.Clear;
+  fHoverImage:= nil;
+  lbHoverfile.Caption:= '';
+  lbClusters.Invalidate;
+end;
+
+procedure TfmMain.lbClustersMouseLeave(Sender: TObject);
+begin
+  HoveredClear;
+end;
+
+
 procedure TfmMain.lbClustersMouseMove(Sender: TObject; Shift: TShiftState; X,
   Y: Integer);
 var
@@ -446,25 +463,17 @@ var
   img: TLazIntfImage;
   fullname: RawByteString;
   sr: TRawByteSearchRec;
-
-  procedure Clear;
-  begin
-    imHoverImage.Picture.Clear;
-    imHoverImage.Tag:= 0;
-    lbHoverfile.Caption:= '';
-  end;
-
 begin
   if not ImageAtXY(X, Y, index, i) then begin
-    Clear;
+    HoveredClear;
     exit;
   end;
 
   c:= lbClusters.Items.Objects[Index] as TCluster;
   im:= @fClassifier.List[c[i]];
-  if imHoverImage.Tag = PtrInt(im) then
+  if fHoverImage = im then
     exit;
-  imHoverImage.Tag:= PtrInt(im);
+  fHoverImage:= im;
   imHoverImage.Picture.Bitmap.Assign(im^.Thumbnail);
   imHoverImage.Refresh;
   fullname:= im^.FullName(frmPathEditor1.Items);
@@ -480,6 +489,7 @@ begin
     FindClose(sr);
   end else
     imHoverImage.Picture.Clear;
+  lbClusters.Invalidate;
 end;
 
 procedure TfmMain.lbClustersDrawItem(Control: TWinControl; Index: Integer;
@@ -502,11 +512,16 @@ begin
         sub:= Bounds(ARect.Left + 5 + i*(seThumbSize.Value+1), ARect.Top, ARect.Height, ARect.Height);
         bmp.LoadFromIntfImage(im^.Thumbnail);
         Draw(sub.Left + (sub.Width-bmp.Width) div 2, sub.Top + (sub.Height-bmp.Height) div 2, bmp);
+        // ilMarks.Draw() breaks drawing the focus rect if called on the selected item; get the bitmap and Draw it instead
+        bmp.Clear;
         case im^.Mark of
           imUnmarked: ;
-          imDelete: ilMarks.Draw(lbClusters.Canvas, sub.Right-ilMarks.Width, sub.Top, IMAGE_MARK_DELETE);
-          imIgnore: ilMarks.Draw(lbClusters.Canvas, sub.Right-ilMarks.Width, sub.Top, IMAGE_MARK_IGNORE);
+          imDelete: ilMarks.GetBitmap(IMAGE_MARK_DELETE, bmp);
+          imIgnore: ilMarks.GetBitmap(IMAGE_MARK_IGNORE, bmp);
         end;
+        Draw(sub.Right-ilMarks.Width, sub.Top, bmp);
+        if fHoverImage = im then
+          DrawFocusRect(sub);
       end;
     finally
       FreeAndNil(bmp);

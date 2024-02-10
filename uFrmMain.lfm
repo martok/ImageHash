@@ -180,12 +180,14 @@ object fmMain: TfmMain
         Width = 321
         Align = alClient
         ItemHeight = 0
+        Options = []
         ParentFont = False
         Style = lbOwnerDrawVariable
         TabOrder = 0
         OnDrawItem = lbClustersDrawItem
         OnMeasureItem = lbClustersMeasureItem
         OnMouseDown = lbClustersMouseDown
+        OnMouseLeave = lbClustersMouseLeave
         OnMouseMove = lbClustersMouseMove
       end
       object ToolBar1: TToolBar
