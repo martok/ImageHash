@@ -104,7 +104,7 @@ var
 begin
   list:= fmMain.lbClusters as TListBox;
   imageInfos:= PImageInfoList(@fmMain.ImageInfos[0]);
-  sourcePaths:= fmMain.frmPathEditor1.Items;
+  sourcePaths:= fmMain.SourcePaths;
   if cbOnlyUnmarked.Checked then
     skipstate:= [imIgnore, imDelete]
   else

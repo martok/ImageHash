@@ -82,10 +82,12 @@ type
   private
     fClassifier: TClassifierThread;
     fImageInfos: TImageInfoList;
+    fSourcePaths: TStrings;
     fAbortFlag: boolean;
     fHoverImage: PImageInfoItem;
     procedure FreeData;
     procedure FreeClassifier;
+    function GetImageInfo(const Index: Integer): PImageInfoItem;
     function GetCheckedFilters: string;
     procedure RunLoaderAndWait;
     procedure RunClassifier;
@@ -96,6 +98,7 @@ type
     procedure PrintMemStats;
   public
     property ImageInfos: TImageInfoList read fImageInfos;
+    property SourcePaths: TStrings read fSourcePaths;
   end;
 
 var
@@ -149,6 +152,7 @@ begin
   {$IfDef DEBUG}
   frmPathEditor1.Add(ExpandFileName(ConcatPaths([ExtractFilePath(ParamStr(0)),'..\data'])));
   {$EndIf}
+  fSourcePaths:= TStringList.Create;
 end;
 
 procedure TfmMain.FormDestroy(Sender: TObject);
@@ -199,12 +203,10 @@ end;
 procedure TfmMain.FreeData;
 var
   i: integer;
-  im: PImageInfoItem;
 begin
   lbClusters.Clear;
   for i:= 0 to high(fImageInfos) do begin
-    im:= @fImageInfos[i];
-    im^.Done;
+    fImageInfos[i].Done;
   end;
   SetLength(fImageInfos, 0);
 end;
@@ -217,6 +219,11 @@ begin
     FreeAndNil(fClassifier);
   end;
   lbClusters.Clear;
+end;   
+
+function TfmMain.GetImageInfo(const Index: Integer): PImageInfoItem;
+begin
+  Result:= @fImageInfos[Index];
 end;
 
 function TfmMain.GetCheckedFilters: string;
@@ -256,11 +263,12 @@ begin
 
     lbStatus.Caption:= 'Creating file list...';
     scanners:= nil;
-    for i:= 0 to frmPathEditor1.Items.Count - 1 do begin
-      if not DirectoryExists(frmPathEditor1.Items[i]) then
+    fSourcePaths.Assign(frmPathEditor1.Items);
+    for i:= 0 to fSourcePaths.Count - 1 do begin
+      if not DirectoryExists(fSourcePaths[i]) then
         continue;
       scanner:= TFileScannerThread.Create;
-      scanner.Path:= frmPathEditor1.Items[i];
+      scanner.Path:= fSourcePaths[i];
       scanner.Filter:= filter;
       scanner.Start;
       Insert(scanner, scanners, length(scanners));
@@ -295,8 +303,8 @@ begin
     SetLength(loaders, seThreads.Value);
     for i:= 0 to High(loaders) do begin
       loaders[i]:= TImageHashThread.Create;
-      loaders[i].Prefixes:= frmPathEditor1.Items;
-      loaders[i].List:= PImageInfoList(@fImageInfos[0]);
+      loaders[i].Prefixes:= fSourcePaths;
+      loaders[i].List:= PImageInfoList(GetImageInfo(0));
       loaders[i].Count:= Length(fImageInfos);
       loaders[i].ThumbSize:= seThumbSize.Value;
       loaders[i].OnImageFinish:= @ImageLoadFinished;
@@ -318,8 +326,8 @@ begin
       // rerun a single loader to redo all that failed because of OutOfMemory errors
       SetLength(loaders, 1);
       loaders[0]:= TImageHashThread.Create;
-      loaders[0].Prefixes:= frmPathEditor1.Items;
-      loaders[0].List:= PImageInfoList(@fImageInfos[0]);
+      loaders[0].Prefixes:= fSourcePaths;
+      loaders[0].List:= PImageInfoList(GetImageInfo(0));
       loaders[0].Count:= Length(fImageInfos);
       loaders[0].ThumbSize:= seThumbSize.Value;
       loaders[0].FinalMemoryError:= true;
@@ -353,7 +361,7 @@ begin
   pbClassifier.Position:= 0;
   pbClassifier.Max:= length(fImageInfos);
   fClassifier:= TClassifierThread.Create;
-  fClassifier.List:= PImageInfoList(@fImageInfos[0]);
+  fClassifier.List:= PImageInfoList(GetImageInfo(0));
   fClassifier.Count:= Length(fImageInfos);
   fClassifier.Limit:= seTolerance.Value;
   fClassifier.MinDimension:= seMinDimension.Value;
@@ -470,13 +478,13 @@ begin
   end;
 
   c:= lbClusters.Items.Objects[Index] as TCluster;
-  im:= @fClassifier.List[c[i]];
+  im:= GetImageInfo(c[i]);
   if fHoverImage = im then
     exit;
   fHoverImage:= im;
   imHoverImage.Picture.Bitmap.Assign(im^.Thumbnail);
   imHoverImage.Refresh;
-  fullname:= im^.FullName(frmPathEditor1.Items);
+  fullname:= im^.FullName(fSourcePaths);
   lbHoverfile.Caption:= Format('%s', [fullname]);
   if FindFirst(fullname, faAnyFile, sr) = 0 then begin
     img:= imgLoadFromFile(fullname);
@@ -510,7 +518,7 @@ begin
     bmp:= TBitmap.Create;
     try
       for i:= 0 to c.Count-1 do begin
-        im:= @fClassifier.List[c[i]];
+        im:= GetImageInfo(c[i]);
         sub:= Bounds(ARect.Left + 5 + i*(seThumbSize.Value+1), ARect.Top, ARect.Height, ARect.Height);
         bmp.LoadFromIntfImage(im^.Thumbnail);
         Draw(sub.Left + (sub.Width-bmp.Width) div 2, sub.Top + (sub.Height-bmp.Height) div 2, bmp);
@@ -548,10 +556,10 @@ begin
     exit;
 
   c:= lbClusters.Items.Objects[Index] as TCluster;
-  im:= @fClassifier.List[c[i]];
+  im:= GetImageInfo(c[i]);
   case Button of
     mbLeft: if im^.Mark = imDelete then im^.Mark:= imUnmarked else im^.Mark:= imDelete;
-    mbMiddle: OpenDocument(im^.FullName(frmPathEditor1.Items));
+    mbMiddle: OpenDocument(im^.FullName(fSourcePaths));
     mbRight: im^.Mark:= imIgnore;
   end;
   lbClusters.Invalidate;
@@ -572,7 +580,7 @@ begin
   for idx:= 0 to lbClusters.Count - 1 do begin
     c:= lbClusters.Items.Objects[idx] as TCluster;
     for i in c do begin
-      im:= @ImageInfos[i];
+      im:= GetImageInfo(i);
       if im^.Mark<>imIgnore then
         im^.Mark:= imUnmarked;
     end;
@@ -589,7 +597,7 @@ begin
   for idx:= 0 to lbClusters.Count - 1 do begin
     c:= lbClusters.Items.Objects[idx] as TCluster;
     for i in c do begin
-      im:= @ImageInfos[i];
+      im:= GetImageInfo(i);
       if im^.Mark = imIgnore then
         im^.Mark:= imUnmarked;
     end;
@@ -613,9 +621,9 @@ begin
     for idx:= 0 to lbClusters.Count - 1 do begin
       c:= lbClusters.Items.Objects[idx] as TCluster;
       for i in c do begin
-        im:= @ImageInfos[i];
+        im:= GetImageInfo(i);
         if im^.Mark = imDelete then begin
-          fn:= im^.FullName(frmPathEditor1.Items);
+          fn:= im^.FullName(fSourcePaths);
           if FileExists(fn) then
             marked.Add(i);
         end;
@@ -631,13 +639,13 @@ begin
     marked.Sort;
     SetLength(names, marked.Count);
     for i:= 0 to high(names) do
-      names[i]:= ImageInfos[marked[i]].FullName(frmPathEditor1.Items);
+      names[i]:= fImageInfos[marked[i]].FullName(fSourcePaths);
     SendFilesToTrash(names);
     // files that were successfully deleted can be freed
     for i:= marked.Count-1 downto 0 do begin
       idx:= marked[i];
-      im:= @ImageInfos[idx];
-      if not FileExists(im^.FullName(frmPathEditor1.Items)) then begin
+      im:= GetImageInfo(idx);
+      if not FileExists(im^.FullName(fSourcePaths)) then begin
         im^.Done;
         Delete(fImageInfos, idx, 1);
       end;
