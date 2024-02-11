@@ -109,8 +109,8 @@ implementation
 {$R *.lfm}
 
 uses
-  Math, IntfGraphics, FPimage, lcltype, LCLIntf, fpcanvas, uUtils, uImageHashing, uThreadScanner,
-  uFrmAutoMark;
+  Math, IntfGraphics, FPimage, lcltype, LCLIntf, fpcanvas, uwinImports,
+  uUtils, uImageHashing, uThreadScanner, uFrmAutoMark;
 
 const
   IMAGE_MARK_DELETE = 0;
@@ -559,7 +559,16 @@ begin
   im:= GetImageInfo(c[i]);
   case Button of
     mbLeft: if im^.Mark = imDelete then im^.Mark:= imUnmarked else im^.Mark:= imDelete;
-    mbMiddle: OpenDocument(im^.FullName(fSourcePaths));
+    mbMiddle:
+      try
+        Screen.BeginWaitCursor;
+        if ssCtrl in Shift then
+          OpenFolderAndSelectFile(im^.FullName(fSourcePaths))
+        else
+          OpenDocument(im^.FullName(fSourcePaths));
+      finally
+        Screen.EndWaitCursor;
+      end;
     mbRight: im^.Mark:= imIgnore;
   end;
   lbClusters.Invalidate;
@@ -662,7 +671,8 @@ begin
   MessageDlg('Select images to remove or keep.' + sLineBreak +
              'LMB: toggle remove/keep' + sLineBreak +
              'RMB: ignore cluster for AutoMark' + sLineBreak +
-             'MMB: open image in default app',
+             'MMB: open image in default app' + sLineBreak +
+             'Ctrl+MMB: show in containing folder',
              mtInformation, [mbOK], 0);
 end;
 
