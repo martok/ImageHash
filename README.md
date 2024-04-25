@@ -3,6 +3,8 @@ Like [Visipics](http://www.visipics.info/index.php?title=Main_Page), but faster.
 
 Written in Lazarus and Freepascal.
 
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
+
 ## Installation
 
 This program does not require installation (just extract to any directory).
