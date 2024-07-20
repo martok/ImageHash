@@ -420,16 +420,18 @@ var
   szAll, szList, szClusters: PtrUInt;
   hs: TFPCHeapStatus;
   i: Integer;
+  im: PImageInfoItem;
 begin
   // count up
   szlist:= 0;
   for i:= 0 to High(fImageInfos) do begin
+    im:= GetImageInfo(i);
     inc(szList, sizeof(TImageInfoItem));
-    inc(szList, StrSize(fImageInfos[i].Error));
-    inc(szList, StrSize(fImageInfos[i].Filename));
-    if Assigned(fImageInfos[i].Thumbnail) then begin
-      inc(szList, fImageInfos[i].Thumbnail.InstanceSize);
-      inc(szList, fImageInfos[i].Thumbnail.Height * fImageInfos[i].Thumbnail.DataDescription.BytesPerLine);
+    inc(szList, StrSize(im^.Error));
+    inc(szList, StrSize(im^.Filename));
+    if Assigned(im^.Thumbnail) then begin
+      inc(szList, im^.Thumbnail.InstanceSize);
+      inc(szList, im^.Thumbnail.Height * im^.Thumbnail.DataDescription.BytesPerLine);
     end;
   end;
   szClusters:= 0;
@@ -648,13 +650,13 @@ begin
     marked.Sort;
     SetLength(names, marked.Count);
     for i:= 0 to high(names) do
-      names[i]:= fImageInfos[marked[i]].FullName(fSourcePaths);
+      names[i]:= GetImageInfo(marked[i])^.FullName(fSourcePaths);
     SendFilesToTrash(names);
     // files that were successfully deleted can be freed
     for i:= marked.Count-1 downto 0 do begin
       idx:= marked[i];
       im:= GetImageInfo(idx);
-      if not FileExists(im^.FullName(fSourcePaths)) then begin
+      if not FileExists(names[i]) then begin
         im^.Done;
         Delete(fImageInfos, idx, 1);
       end;
