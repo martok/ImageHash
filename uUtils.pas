@@ -19,7 +19,7 @@ type
   generic TListTool<T> = record
   type
     TAList = specialize TFPGList<T>;
-    TACompareFunc = TAList.TCompareFunc;
+    TACompareFunc = function(const Item1, Item2: T): Integer;
     TACompareNest = function(const Item1, Item2: T): Integer is nested;
 
     class function FindSmallestValue(AList: TAList; ACompare: TACompareFunc; out Value: T): integer; static; overload;
