@@ -79,6 +79,7 @@ type
     procedure FormResize(Sender: TObject);
     procedure btnInfoClick(Sender: TObject);
     procedure lbClustersMouseLeave(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
     fClassifier: TClassifierThread;
     fImageInfos: TImageInfoList;
@@ -197,7 +198,6 @@ begin
   finally
     FreeAndNil(clusters);
   end;
-
 end;
 
 procedure TfmMain.FreeData;
@@ -466,6 +466,11 @@ end;
 procedure TfmMain.lbClustersMouseLeave(Sender: TObject);
 begin
   HoveredClear;
+end;
+
+procedure TfmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  fAbortFlag:= true;
 end;
 
 
