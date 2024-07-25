@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, math, IntfGraphics, FPimage, lcltype, lazcanvas, GraphType,
-  fpcanvas;
+  fpcanvas, uCanvasInterpolation;
 
 function imgLoadFromFile(aFile: string): TLazIntfImage;
 function imgConvertCompatibleGrey(source: TLazIntfImage): TLazIntfImage;
@@ -202,11 +202,11 @@ begin
   // create thumbs
   if thumbsize>0 then begin    
     fac:= Max(inter.Width, inter.Height) / thumbsize;
-    thumb^:= imgScaleCompatible(inter, Round(inter.Width/fac), Round(inter.Height/fac), TMitchelInterpolation.Create);
+    thumb^:= imgScaleCompatible(inter, Round(inter.Width/fac), Round(inter.Height/fac), TMitchelInterpolationOpt.Create);
   end;
 
   // create greyscale for DHash
-  scale:= imgScaleCompatible(inter, HASH_SIZE, HASH_SIZE, TMitchelInterpolation.Create);
+  scale:= imgScaleCompatible(inter, HASH_SIZE, HASH_SIZE, TMitchelInterpolationOpt.Create);
   grey:= imgConvertCompatibleGrey(scale);
   imgGetData(grey, @id);
   hashDHashSq3(id, hash00, hash90, hash180);
