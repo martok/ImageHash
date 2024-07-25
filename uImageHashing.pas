@@ -94,6 +94,7 @@ begin
       scale:= TLazIntfImage.CreateCompatible(source, Width, Height);
       scalecanvas:= TLazCanvas.Create(scale);
       scalecanvas.Interpolation:= Interpolation;
+      scalecanvas.DrawingMode:= dmOpaque;
       scalecanvas.StretchDraw(0, 0, scale.Width, scale.Height, source);
       Result:= scale;
     finally
@@ -183,28 +184,30 @@ begin
   FreeInter:= false;
 
   source:= imgLoadFromFile(aFile);
+
+  if Assigned(ImgW) then begin
+    ImgW^:= source.Width;
+    ImgH^:= source.Height;
+  end;
+
   // decimate to something useful first
-  fac:= Max(1,Min(source.Width, source.Height)) / (HASH_SIZE*64);
+  fac:= Min(source.Width, source.Height) / Max(HASH_SIZE*64, thumbsize);
   if fac > 1 then begin
     inter:= imgScaleCompatible(source, trunc(source.Width/fac), trunc(source.Height/fac), TFPBoxInterpolation.Create);
     FreeInter:= true;
   end
   else
     inter:= source;
+
+  // create thumbs
+  if thumbsize>0 then begin    
+    fac:= Max(inter.Width, inter.Height) / thumbsize;
+    thumb^:= imgScaleCompatible(inter, Round(inter.Width/fac), Round(inter.Height/fac), TMitchelInterpolation.Create);
+  end;
+
+  // create greyscale for DHash
   scale:= imgScaleCompatible(inter, HASH_SIZE, HASH_SIZE, TMitchelInterpolation.Create);
   grey:= imgConvertCompatibleGrey(scale);
-
-  if thumbsize>0 then begin
-    if source.Width > source.Height then
-      thumb^:= imgScaleCompatible(inter, thumbsize, thumbsize * source.Height div source.Width)
-    else
-      thumb^:= imgScaleCompatible(inter, thumbsize * source.Width div source.Height, thumbsize)
-  end;
-  if Assigned(ImgW) then begin
-    ImgW^:= source.Width;
-    ImgH^:= source.Height;
-  end;
-
   imgGetData(grey, @id);
   hashDHashSq3(id, hash00, hash90, hash180);
 
