@@ -339,7 +339,7 @@ begin
 
     t2:= GetTickCount64;
     meLog.Lines.Add('time:  %dms',[t2-t1]);
-    meLog.Lines.Add('clusters: %d',[fClassifier.Clusters.Count]);
+    meLog.Lines.Add('clusters: %d / %d',[fClassifier.Clusters.Count, Length(fImageInfos)]);
     k:= 0;
     for i:= 0 to fClassifier.Clusters.Count-1 do begin
       if fClassifier.Clusters[i].Count > 1 then

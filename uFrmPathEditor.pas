@@ -109,6 +109,12 @@ begin
   finally
     Items.EndUpdate;
   end;
+  // any paths at all?
+  if Items.Count = 0 then begin
+    MessageDlg('No directory configured!', mtError, [mbOK], 0);
+    mePaths.SetFocus;
+    Result:= false;
+  end;
   // alert on bad paths
   for i:= 0 to Items.Count - 1 do begin
     if not DirectoryExists(Items[i]) then begin
