@@ -5,30 +5,26 @@ unit uThreadClassifier;
 interface
 
 uses
-  Classes, SysUtils, syncobjs, fgl, IntegerList, uThreadHashing;
+  Classes, SysUtils, syncobjs, fgl, IntegerList, uThreadHashing, uNotifier;
 
 type
   TCluster = TIntegerList;
   TClusterList = specialize TFPGList<TCluster>;
-
-  { TClassifierThread }
 
   TClassifierThread = class(TThread)
   private
     fClustersLock: TCriticalSection;
     fCount: integer;
     fList: PImageInfoList;
-    fWakeEvent: TEvent;
     fClusters: TClusterList;
     fLimit: integer;
-    fImageFinishEvent: TImageFinishEvent;
     fMinDimension: integer;
+    fNotifier: TThreadStatusNotifier;
   protected
     procedure Execute; override;
   public
     constructor Create;
     destructor Destroy; override;
-    property WakeEvent: TEvent read fWakeEvent;
     property Count: integer read fCount write fCount;
     property List: PImageInfoList read fList write fList;
     property Limit: integer read fLimit write fLimit;
@@ -37,7 +33,7 @@ type
 
     procedure GetClusters(const aClusters: TClusterList);
 
-    property OnImageFinish: TImageFinishEvent read fImageFinishEvent write fImageFinishEvent;
+    property Notifier: TThreadStatusNotifier read fNotifier write fNotifier;
   end;
 
 function hashWithinRange(i1, i2: PImageInfoItem; Limit: integer): boolean; //inline;
@@ -94,7 +90,6 @@ begin
   inherited Create(false);
   fList:= nil;
   fCount:= 0;
-  fWakeEvent:= TSimpleEvent.Create;
   fClusters:= TClusterList.Create;
   fClustersLock:= TCriticalSection.Create;
   fLimit:= 3;
@@ -110,7 +105,6 @@ begin
     c.Free;
   FreeAndNil(fClusters);
   FreeAndNil(fClustersLock);
-  FreeAndNil(fWakeEvent);
   inherited Destroy;
 end;
 
@@ -159,13 +153,13 @@ var
   i, ci: integer;
   matchclusters: TClusterList;
   chosenCluster: TCluster;
-begin
+begin   
+  Priority:= tpLowest;
+
   cursor:= 0;
   while not Terminated and (cursor < fCount) do begin
     if InterlockedCompareExchange(fList[cursor].Status, STATUS_DONE, STATUS_DONE) <> STATUS_DONE then begin
-      fWakeEvent.ResetEvent;
-      Sleep(10);
-      fWakeEvent.WaitFor(100);
+      Sleep(50);
       Continue;
     end;
     im:= @fList[Cursor];
@@ -220,8 +214,7 @@ begin
       end;  
     end;
 
-    if Assigned(fImageFinishEvent) then
-      Queue(fImageFinishEvent);
+    fNotifier.NotifyClassfierProgress;
     inc(cursor);
   end;
 end;

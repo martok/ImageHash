@@ -6,7 +6,7 @@ unit uThreadHashing;
 interface
 
 uses
-  Classes, SysUtils, syncobjs, uImageHashing, Graphics, IntfGraphics;
+  Classes, SysUtils, syncobjs, uImageHashing, Graphics, IntfGraphics, uNotifier;
 
 type
   TImageMark = (imUnmarked, imDelete, imIgnore);
@@ -29,17 +29,15 @@ type
 
   PImageInfoList = ^TImageInfoItem;
 
-  TImageFinishEvent = procedure of object;
-
   TImageHashThread = class(TThread)
   private
     fCount: integer;
     fList: PImageInfoList;
     fPrefixes: TStrings;
-    fImageFinishEvent: TImageFinishEvent;
     fThumbSize: integer;
     fSawMemoryError: boolean;
     fFinalMemoryError: boolean;
+    fNotifier: TThreadStatusNotifier;
   protected
     procedure Execute; override;
   public
@@ -51,8 +49,8 @@ type
     property ThumbSize: integer read fThumbSize write fThumbSize;
     property FinalMemoryError: boolean read fFinalMemoryError write fFinalMemoryError;
 
-    property SawMemoryError: boolean read fSawMemoryError;
-    property OnImageFinish: TImageFinishEvent read fImageFinishEvent write fImageFinishEvent;
+    property SawMemoryError: boolean read fSawMemoryError;   
+    property Notifier: TThreadStatusNotifier read fNotifier write fNotifier;
   end;
 
 const
@@ -95,7 +93,6 @@ end;
 
 constructor TImageHashThread.Create;
 begin
-  Priority:= tpLower;
   inherited Create(true);
   fList:= nil;
   fCount:= 0;
@@ -114,7 +111,9 @@ var
   cursor, i: integer;
   im: PImageInfoItem;
   fn: String;
-begin
+begin   
+  Priority:= tpLowest;
+
   for cursor:= 0 to fCount - 1 do begin
     if Terminated then
       Break;
@@ -142,8 +141,7 @@ begin
 
     // Don't need interlocked here, we already hold the lock
     im^.Status:= STATUS_DONE;
-    if Assigned(fImageFinishEvent) then
-      Queue(fImageFinishEvent);
+    fNotifier.NotifyHashProgress;
   end;
 end;
 

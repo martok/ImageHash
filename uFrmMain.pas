@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, GraphType, CheckLst, Spin, ComCtrls,
-  Buttons, uThreadHashing, uThreadClassifier, uFrmPathEditor, uProgramInfoDialog, Types;
+  Buttons, uNotifier, uThreadHashing, uThreadClassifier, uFrmPathEditor, uProgramInfoDialog, Types;
 
 type
 
@@ -85,6 +85,7 @@ type
     fImageInfos: TImageInfoList;
     fSourcePaths: TStrings;
     fAbortFlag: boolean;
+    fNotifier: TThreadStatusNotifier;
     fHoverImage: PImageInfoItem;
     procedure FreeData;
     procedure FreeClassifier;
@@ -92,8 +93,7 @@ type
     function GetCheckedFilters: string;
     procedure RunLoaderAndWait;
     procedure RunClassifier;
-    procedure ImageLoadFinished;
-    procedure ImageClassifierFinished;
+    procedure NotifyProgress;
     function ImageAtXY(X, Y: integer; out ICluster, IImage: integer): boolean;
     procedure HoveredClear;
     procedure PrintMemStats;
@@ -147,7 +147,10 @@ begin
   lbHoverfile.Caption:= '';
   lbStatus.Caption:= 'Waiting...';
   btnStartStopLoader.ImageIndex:= IMAGE_SCAN_START;
-  btnRecompare.Enabled:= false;
+  btnRecompare.Enabled:= false;  
+
+  fNotifier:= TThreadStatusNotifier.Create;
+  fNotifier.OnUpdateUIEvent:= @NotifyProgress;
 
   frmPathEditor1.Clear;
   {$IfDef DEBUG}
@@ -160,45 +163,9 @@ procedure TfmMain.FormDestroy(Sender: TObject);
 begin
   FreeClassifier;
   FreeData;
+  FreeAndNil(fNotifier);
 end;
 
-procedure TfmMain.ImageLoadFinished;
-begin
-  pbLoader.Position:= pbLoader.Position + 1;
-  lbStatus.Caption:= Format('%d/%d',[pbLoader.Position,pbLoader.Max]);
-  if Assigned(fClassifier) then
-    fClassifier.WakeEvent.SetEvent;
-end;
-
-procedure TfmMain.ImageClassifierFinished;
-var
-  c: TCluster;
-  oldtop: integer;
-  clusters: TClusterList;
-begin
-  pbClassifier.Position:= pbClassifier.Position + 1;
-
-  clusters:= TClusterList.Create;
-  try
-    fClassifier.GetClusters(clusters);
-    if clusters.Count <> lbClusters.Count then begin
-      oldtop:= lbClusters.TopIndex;
-      lbClusters.Items.BeginUpdate;
-      try
-        lbClusters.Items.Clear;
-        for c in clusters do begin
-          lbClusters.AddItem(inttostr(lbClusters.Items.Count), c);
-        end;
-      finally
-        lbClusters.Items.EndUpdate;
-      end;
-      lbClusters.TopIndex:= oldtop;
-    end else
-      lbClusters.Invalidate;
-  finally
-    FreeAndNil(clusters);
-  end;
-end;
 
 procedure TfmMain.FreeData;
 var
@@ -290,8 +257,8 @@ begin
     for i:= 0 to High(scanners) do
       scanners[i].Free;
 
-    pbLoader.Position:= 0;
-    pbLoader.Max:= length(fImageInfos);
+    lbStatus.Caption:= 'Initialize...';
+    fNotifier.StartProcess(Length(fImageInfos));
 
     if Length(fImageInfos) = 0 then begin
       lbStatus.Caption:= 'No files found';
@@ -312,7 +279,7 @@ begin
       loaders[i].List:= PImageInfoList(GetImageInfo(0));
       loaders[i].Count:= Length(fImageInfos);
       loaders[i].ThumbSize:= seThumbSize.Value;
-      loaders[i].OnImageFinish:= @ImageLoadFinished;
+      loaders[i].Notifier:= fNotifier;
       loaders[i].Start;
     end;
     WaitForMultipleThreads(@loaders[0], length(loaders), @Application.ProcessMessages, @fAbortFlag);
@@ -336,7 +303,7 @@ begin
       loaders[0].Count:= Length(fImageInfos);
       loaders[0].ThumbSize:= seThumbSize.Value;
       loaders[0].FinalMemoryError:= true;
-      loaders[0].OnImageFinish:= @ImageLoadFinished;
+      loaders[0].Notifier:= fNotifier;
       loaders[0].Start;
       WaitForMultipleThreads(@loaders[0], length(loaders), @Application.ProcessMessages, @fAbortFlag);
     end;
@@ -363,15 +330,55 @@ end;
 procedure TfmMain.RunClassifier;
 begin
   FreeClassifier;
-  pbClassifier.Position:= 0;
-  pbClassifier.Max:= length(fImageInfos);
+  fNotifier.Classified:= 0;
   fClassifier:= TClassifierThread.Create;
   fClassifier.List:= PImageInfoList(GetImageInfo(0));
   fClassifier.Count:= Length(fImageInfos);
   fClassifier.Limit:= seTolerance.Value;
   fClassifier.MinDimension:= seMinDimension.Value;
-  fClassifier.OnImageFinish:= @ImageClassifierFinished;
+  fClassifier.Notifier:= fNotifier;
   fClassifier.Start;
+end;   
+
+procedure TfmMain.NotifyProgress;  
+var
+  c: TCluster;
+  oldtop: integer;
+  clusters: TClusterList;
+begin                      
+  if pbLoader.Max <> fNotifier.TotalCount then begin
+    pbLoader.Max:= fNotifier.TotalCount;
+    pbClassifier.Max:= fNotifier.TotalCount;
+  end;
+
+  if pbLoader.Position <> fNotifier.Loaded then begin
+    pbLoader.Position:= fNotifier.Loaded;
+    lbStatus.Caption:= Format('%d/%d', [pbLoader.Position, pbLoader.Max]);
+  end;
+
+  if pbClassifier.Position <> fNotifier.Classified then begin
+    pbClassifier.Position:= fNotifier.Classified;
+    clusters:= TClusterList.Create;
+    try
+      fClassifier.GetClusters(clusters);
+      if clusters.Count <> lbClusters.Count then begin
+        oldtop:= lbClusters.TopIndex;
+        lbClusters.Items.BeginUpdate;
+        try
+          lbClusters.Items.Clear;
+          for c in clusters do begin
+            lbClusters.AddItem(IntToStr(lbClusters.Items.Count), c);
+          end;
+        finally
+          lbClusters.Items.EndUpdate;
+        end;
+        lbClusters.TopIndex:= oldtop;
+      end else
+        lbClusters.Invalidate;
+    finally
+      FreeAndNil(clusters);
+    end;
+  end;
 end;
 
 procedure TfmMain.btnStartStopLoaderClick(Sender: TObject);

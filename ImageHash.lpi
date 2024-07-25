@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="2"/>
-      <BuildNr Value="28"/>
+      <BuildNr Value="29"/>
       <StringTable CompanyName="Martok" FileDescription="ImageHash"/>
     </VersionInfo>
     <BuildModes Count="2">
@@ -78,7 +78,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="12">
+    <Units Count="13">
       <Unit0>
         <Filename Value="ImageHash.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -136,6 +136,10 @@
         <Filename Value="uCanvasInterpolation.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit11>
+      <Unit12>
+        <Filename Value="uNotifier.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit12>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
