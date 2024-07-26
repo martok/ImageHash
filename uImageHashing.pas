@@ -190,8 +190,8 @@ begin
     ImgH^:= source.Height;
   end;
 
-  // decimate to something useful first
-  fac:= Min(source.Width, source.Height) / Max(HASH_SIZE*64, thumbsize);
+  // decimate to something useful first, but keep enough information so that downscaling later does not change the DHash
+  fac:= Min(source.Width, source.Height) / Max(HASH_SIZE*40, thumbsize);
   if fac > 1 then begin
     inter:= imgScaleCompatible(source, trunc(source.Width/fac), trunc(source.Height/fac), TFPBoxInterpolation.Create);
     FreeInter:= true;
