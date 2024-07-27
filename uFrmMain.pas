@@ -94,6 +94,7 @@ type
     procedure RunLoaderAndWait;
     procedure RunClassifier;
     procedure NotifyProgress;
+    procedure InteractiveWait;
     function ImageAtXY(X, Y: integer; out ICluster, IImage: integer): boolean;
     procedure HoveredClear;
     procedure PrintMemStats;
@@ -282,7 +283,7 @@ begin
       loaders[i].Notifier:= fNotifier;
       loaders[i].Start;
     end;
-    WaitForMultipleThreads(@loaders[0], length(loaders), @Application.ProcessMessages, @fAbortFlag);
+    WaitForMultipleThreads(@loaders[0], length(loaders), @InteractiveWait, @fAbortFlag);
     loadermemerror:= false;
     for i:= 0 to High(loaders) do begin
       loadermemerror:= loadermemerror or loaders[i].SawMemoryError;
@@ -305,9 +306,9 @@ begin
       loaders[0].FinalMemoryError:= true;
       loaders[0].Notifier:= fNotifier;
       loaders[0].Start;
-      WaitForMultipleThreads(@loaders[0], length(loaders), @Application.ProcessMessages, @fAbortFlag);
+      WaitForMultipleThreads(@loaders[0], length(loaders), @InteractiveWait, @fAbortFlag);
     end;
-    WaitForMultipleThreads(@fClassifier, 1, @Application.ProcessMessages, @fAbortFlag);
+    WaitForMultipleThreads(@fClassifier, 1, @InteractiveWait, @fAbortFlag);
 
     t2:= GetTickCount64;
     meLog.Lines.Add('time:  %dms',[t2-t1]);
@@ -379,6 +380,13 @@ begin
       FreeAndNil(clusters);
     end;
   end;
+end;
+
+procedure TfmMain.InteractiveWait;
+begin
+  fNotifier.BlockDispatch;
+  Application.ProcessMessages;
+  fNotifier.EnableDispatch;
 end;
 
 procedure TfmMain.btnStartStopLoaderClick(Sender: TObject);
