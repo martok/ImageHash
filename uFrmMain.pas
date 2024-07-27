@@ -98,6 +98,7 @@ type
     function ImageAtXY(X, Y: integer; out ICluster, IImage: integer): boolean;
     procedure HoveredClear;
     procedure PrintMemStats;
+    procedure ClearClustersList;
   public
     property ImageInfos: TImageInfoList read fImageInfos;
     property SourcePaths: TStrings read fSourcePaths;
@@ -164,9 +165,9 @@ procedure TfmMain.FormDestroy(Sender: TObject);
 begin
   FreeClassifier;
   FreeData;
+  ClearClustersList;
   FreeAndNil(fNotifier);
 end;
-
 
 procedure TfmMain.FreeData;
 var
@@ -186,8 +187,20 @@ begin
     fClassifier.WaitFor;
     FreeAndNil(fClassifier);
   end;
-  lbClusters.Clear;
-end;   
+  ClearClustersList;
+end;
+
+procedure TfmMain.ClearClustersList;
+var
+  i: Integer;
+  c: TCluster;
+begin
+  for i:= 0 to lbClusters.Items.Count - 1 do begin
+    c:= lbClusters.Items.Objects[i] as TCluster;
+    c.Release;
+  end;
+  lbClusters.Items.Clear;
+end;
 
 function TfmMain.GetImageInfo(const Index: Integer): PImageInfoItem;
 begin
@@ -310,7 +323,7 @@ begin
     end;
     WaitForMultipleThreads(@fClassifier, 1, @InteractiveWait, @fAbortFlag);
 
-    t2:= GetTickCount64;
+    t2:= GetTickCount64;  
     meLog.Lines.Add('time:  %dms',[t2-t1]);
     meLog.Lines.Add('clusters: %d / %d',[fClassifier.Clusters.Count, Length(fImageInfos)]);
     k:= 0;
@@ -366,9 +379,10 @@ begin
         oldtop:= lbClusters.TopIndex;
         lbClusters.Items.BeginUpdate;
         try
-          lbClusters.Items.Clear;
+          ClearClustersList;
           for c in clusters do begin
-            lbClusters.AddItem(IntToStr(lbClusters.Items.Count), c);
+            lbClusters.AddItem(IntToStr(lbClusters.Items.Count), c.AddRefed);
+            c.Release;
           end;
         finally
           lbClusters.Items.EndUpdate;
@@ -454,10 +468,12 @@ begin
       inc(szList, im^.Thumbnail.Height * im^.Thumbnail.DataDescription.BytesPerLine);
     end;
   end;
-  szClusters:= 0;
+  szClusters:= 0; 
+  inc(szClusters, fClassifier.Clusters.InstanceSize);  
+  inc(szClusters, fClassifier.Clusters.Count * Sizeof(TCluster));
   for i:= 0 to fClassifier.Clusters.Count-1 do begin
     inc(szClusters, fClassifier.Clusters[i].InstanceSize);
-    inc(szClusters, fClassifier.Clusters[i].Capacity * fClassifier.Clusters[i].ItemSize);
+    inc(szClusters, fClassifier.Clusters[i].Count * SizeOf(Integer));
   end;
   szAll:= szList + szClusters;
   meLog.Lines.Add('UsedAll = %d k', [szAll shr 10]);
@@ -615,7 +631,7 @@ var
 begin
   for idx:= 0 to lbClusters.Count - 1 do begin
     c:= lbClusters.Items.Objects[idx] as TCluster;
-    for i in c do begin
+    for i in c.Items do begin
       im:= GetImageInfo(i);
       if im^.Mark<>imIgnore then
         im^.Mark:= imUnmarked;
@@ -632,7 +648,7 @@ var
 begin
   for idx:= 0 to lbClusters.Count - 1 do begin
     c:= lbClusters.Items.Objects[idx] as TCluster;
-    for i in c do begin
+    for i in c.Items do begin
       im:= GetImageInfo(i);
       if im^.Mark = imIgnore then
         im^.Mark:= imUnmarked;
@@ -650,18 +666,18 @@ var
   fn: String;
   names: TStringArray = nil;
 begin
-  marked:= TCluster.Create;
+  marked:= TCluster.Create([]);
   try
     Screen.BeginWaitCursor;
     // collect marked and currently existing files
     for idx:= 0 to lbClusters.Count - 1 do begin
       c:= lbClusters.Items.Objects[idx] as TCluster;
-      for i in c do begin
+      for i in c.Items do begin
         im:= GetImageInfo(i);
         if im^.Mark = imDelete then begin
           fn:= im^.FullName(fSourcePaths);
           if FileExists(fn) then
-            marked.Add(i);
+            marked.Append(i);
         end;
       end;
     end;
@@ -671,8 +687,7 @@ begin
     end;
     if MessageDlg(Format('%d items selected for deletion, continue?', [marked.Count]), mtInformation, mbYesNo, 0) <> mrYes then
       exit;
-    // sort and collect names
-    marked.Sort;
+    // collect names
     SetLength(names, marked.Count);
     for i:= 0 to high(names) do
       names[i]:= GetImageInfo(marked[i])^.FullName(fSourcePaths);

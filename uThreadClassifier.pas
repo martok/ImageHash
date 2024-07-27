@@ -1,6 +1,7 @@
 unit uThreadClassifier;
 
 {$mode objfpc}{$H+}
+{$ModeSwitch advancedrecords}
 
 interface
 
@@ -8,12 +9,70 @@ uses
   Classes, SysUtils, syncobjs, fgl, IntegerList, uThreadHashing, uNotifier;
 
 type
-  TCluster = TIntegerList;
-  TClusterList = specialize TFPGList<TCluster>;
+  {
+    Lockfree cluster classes based on 2 assumptions:
+     - machineword writes are always atomic and serialized based on cache-coherency
+     - dynarrays are refcounted, if changing the length changes the pointer, that change is also atomic
+    TCluster is refcounted (same implementation as TInterfacedObject)
+    TClusterList takes/releases ownership automatically
+    TClusterList has one unavoidable short lock for safe iteration
+  }
+
+  TClusterList = class;
+
+  TIndexArray = array of integer;
+  TCluster = class
+  private
+    fRefCount,
+    fDestroyCount: integer;
+    function GetItem(Index: Integer): integer; inline;
+  public
+    Items: TIndexArray;
+    class function NewInstance: TObject; override;
+    constructor Create(aItems: TIndexArray);
+    destructor Destroy; override;
+    function Count: integer; inline;
+    procedure AfterConstruction; override;
+    function AddRefed: TCluster;
+    function Release: integer;
+    procedure Append(aItem: integer);
+    procedure Delete(aIndex: integer);
+    property Item[Index: Integer]: integer read GetItem; default;
+    function CheckInsertIntoCluster(im: PImageInfoItem; aList: PImageInfoList; MaxDistance: integer): boolean;
+  end;
+
+  TClusterArray = array of TCluster;
+
+  TClusterListEnumerator = record
+  private
+    fClusters: TClusterArray;
+    fCurrentPosition: integer;
+    Function GetCurrent: TCluster; inline;
+  public
+    Function MoveNext: Boolean; inline;
+    property Current: TCluster read GetCurrent;
+  end;
+
+  TClusterList = class
+  private
+    fEnumeratorLock: TRTLCriticalSection;
+    function GetItem(Index: Integer): TCluster;
+  public
+    Items: TClusterArray;
+    constructor Create;
+    destructor Destroy; override;
+    function Count: integer; inline;
+    procedure Append(aCluster: TCluster);
+    procedure Delete(aIndex: integer);
+    procedure Remove(aCluster: TCluster);   
+    property Item[Index: Integer]: TCluster read GetItem; default;
+    procedure SortByLength;
+    // Enumerate AddRefed Clusters on a static copy of Items, must call .Release in loop body
+    function GetEnumerator: TClusterListEnumerator;
+  end;
 
   TClassifierThread = class(TThread)
   private
-    fClustersLock: TCriticalSection;
     fCount: integer;
     fList: PImageInfoList;
     fClusters: TClusterList;
@@ -39,6 +98,9 @@ type
 function hashWithinRange(i1, i2: PImageInfoItem; Limit: integer): boolean; //inline;
 
 implementation
+
+uses
+  sortbase;
 
 function hashWithinRange(i1, i2: PImageInfoItem; Limit: integer): boolean; //inline;
 var
@@ -81,6 +143,190 @@ begin
   );
 end;
 
+{ TCluster }
+
+class function TCluster.NewInstance: TObject;
+begin
+  Result:=inherited newinstance;  
+  if NewInstance<>nil then
+    TCluster(Result).fRefCount:=1;
+end;
+
+constructor TCluster.Create(aItems: TIndexArray);
+begin
+  inherited Create;
+  Items:= aItems;
+end;
+
+destructor TCluster.Destroy;
+begin             
+  fRefCount:=0;
+  fDestroyCount:=0;
+  inherited Destroy;
+end;
+
+procedure TCluster.AfterConstruction;
+begin
+  InterlockedDecrement(fRefCount);
+end;
+
+function TCluster.AddRefed: TCluster;
+begin
+  if interlockedincrement(fRefCount) > 0 then
+    Result:= Self
+  else
+    Result:= nil;
+end;
+
+function TCluster.Release: integer;
+begin
+  Result:=InterlockedDecrement(fRefCount);
+  if Result=0 then begin
+    if interlockedincrement(fDestroyCount)=1 then
+      self.Destroy;
+  end;
+end; 
+
+function TCluster.Count: integer;
+begin
+  Result:= Length(Items);
+end;
+
+procedure TCluster.Append(aItem: integer);
+begin
+  Insert(aItem, Items, Maxint);
+end;
+
+procedure TCluster.Delete(aIndex: integer);
+begin
+  System.Delete(Items, aIndex, 1);
+end;
+
+function TCluster.GetItem(Index: Integer): integer;
+begin
+  Result:= Items[Index];
+end;
+
+function TCluster.CheckInsertIntoCluster(im: PImageInfoItem; aList: PImageInfoList; MaxDistance: integer): boolean;
+var
+  r: PImageInfoItem;
+  i, miss: integer;
+begin
+  miss:= 0;
+  // match against all images in that cluster, one mismatch is enough to discard
+  Result:= true;
+  for i in Items do begin
+    r:= @aList[i];
+    if not hashWithinRange(r, im, MaxDistance) then
+      inc(miss);
+  end;
+  Result:= miss <= Count div 2;
+end;
+
+{ TClusterListEnumerator }
+
+function TClusterListEnumerator.GetCurrent: TCluster;
+begin
+  Result:= fClusters[fCurrentPosition];
+end;
+
+function TClusterListEnumerator.MoveNext: Boolean;
+begin          
+  Inc(fCurrentPosition);
+  Result:= fCurrentPosition < Length(fClusters);
+end;
+
+{ TClusterList }
+
+constructor TClusterList.Create;
+begin
+  Items:= nil;
+  InitCriticalSection(fEnumeratorLock);
+end;
+
+destructor TClusterList.Destroy;
+var
+  i: Integer;
+begin
+  for i:= 0 to high(Items) do
+    Items[i].Release;
+  DoneCriticalSection(fEnumeratorLock);
+  inherited Destroy;
+end;
+
+function TClusterList.Count: integer;
+begin
+  Result:= Length(Items);
+end;
+
+procedure TClusterList.Append(aCluster: TCluster);
+begin
+  Insert(aCluster.AddRefed, Items, Maxint);
+end;
+
+procedure TClusterList.Delete(aIndex: integer);
+var
+  it: TCluster;
+begin
+  EnterCriticalSection(fEnumeratorLock);
+  try
+    it:= Items[aIndex];
+    System.Delete(Items, aIndex, 1);
+    it.Release;
+  finally
+    LeaveCriticalSection(fEnumeratorLock);
+  end;
+end;
+
+procedure TClusterList.Remove(aCluster: TCluster);
+var
+  i: Integer;
+begin
+  for i:= 0 to high(Items) do begin
+    if Items[i] = aCluster then begin
+      Delete(i);
+      exit;
+    end;
+  end;
+end;
+
+function TClusterList.GetItem(Index: Integer): TCluster;
+begin
+  Result:= Items[Index];
+end;
+
+function SortFunc_ClusterByLength(Item1, Item2: TCluster): Integer;
+begin
+  Result:= Item2.Count - Item1.Count;
+end;
+
+procedure TClusterList.SortByLength;
+var
+  SortList: TClusterArray;
+begin
+  SortList:= Copy(Items);
+  DefaultSortingAlgorithm^.PtrListSorter_NoContextComparer(@SortList[0],
+                                                           Length(SortList),
+                                                           TListSortComparer_NoContext(@SortFunc_ClusterByLength));
+  Items:= SortList;
+end;
+
+function TClusterList.GetEnumerator: TClusterListEnumerator;
+var
+  lst: TClusterArray;
+  i: integer;
+begin
+  EnterCriticalSection(fEnumeratorLock);
+  try
+    lst:= Items;
+    for i:= 0 to high(lst) do
+      lst[i].AddRefed;
+  finally
+    LeaveCriticalSection(fEnumeratorLock);
+  end;
+  Result.fClusters:= lst;
+  Result.fCurrentPosition:= -1;
+end;
 
 
 { TClassifierThread }
@@ -91,20 +337,13 @@ begin
   fList:= nil;
   fCount:= 0;
   fClusters:= TClusterList.Create;
-  fClustersLock:= TCriticalSection.Create;
   fLimit:= 3;
   fMinDimension:= 0;
 end;
 
 destructor TClassifierThread.Destroy;
-var
-  c: TCluster;
 begin
-  fClustersLock.Acquire;
-  for c in fClusters do
-    c.Free;
   FreeAndNil(fClusters);
-  FreeAndNil(fClustersLock);
   inherited Destroy;
 end;
 
@@ -112,47 +351,21 @@ procedure TClassifierThread.GetClusters(const aClusters: TClusterList);
 var
   c: TCluster;
 begin
-  fClustersLock.Acquire;
-  try
-    for c in fClusters do begin
-      if c.Count > 1 then
-        aClusters.Add(c);
-    end;
-  finally
-    fClustersLock.Release;
+  for c in fClusters do begin
+    if c.Count > 1 then
+      aClusters.Append(c);
+    c.Release;
   end;
-end;
-
-function SortFunc_ClusterByLength(const Item1, Item2: TCluster): Integer;
-begin
-  Result:= Item2.Count - Item1.Count;
 end;
 
 procedure TClassifierThread.Execute; 
-
-  function CheckInsertIntoCluster(c: TCluster; im: PImageInfoItem): boolean;
-  var
-    r: PImageInfoItem;
-    i, miss: integer;
-  begin
-    miss:= 0;
-    // match against all images in that cluster, one mismatch is enough to discard
-    Result:= true;
-    for i in c do begin
-      r:= @fList[i];
-      if not hashWithinRange(r, im, fLimit) then
-        inc(miss);
-    end;
-    Result:= miss <= c.Count div 2;
-  end;
-
 var
   cursor: integer;
   im, r: PImageInfoItem;
+  chosenCluster: TCluster;
   c: TCluster;
   i, ci: integer;
   matchclusters: TClusterList;
-  chosenCluster: TCluster;
 begin   
   Priority:= tpLowest;
 
@@ -165,53 +378,50 @@ begin
     im:= @fList[Cursor];
     if (im^.Error = '') and (im^.ImgW>=fMinDimension) and (im^.ImgH>=fMinDimension) then begin
       chosenCluster:= nil;
-      fClustersLock.Acquire;
       matchclusters:= TClusterList.Create;
       try        
         // compare against all known clusters
         for c in fClusters do begin
-          if CheckInsertIntoCluster(c, im) then 
+          if c.CheckInsertIntoCluster(im, fList, fLimit) then
             // potential candidate cluster
-            matchclusters.Add(c);
+            matchclusters.Append(c);
+          c.Release;
         end;
         // did we find a candidate?
         if matchclusters.Count > 0 then begin
           // add to the largest of them
-          matchclusters.Sort(@SortFunc_ClusterByLength);
-          chosenCluster:= matchclusters[0];
-          chosenCluster.Add(cursor);
+          matchclusters.SortByLength;
+          chosenCluster:= matchclusters[0].AddRefed;
+          chosenCluster.Append(cursor);
 
           // see if we can now merge the other candidate groups to this (found missing link)
-          for ci:= 1 to matchclusters.Count-1 do begin
-            c:= matchclusters[ci];
+          matchclusters.Delete(0);
+          for c in matchclusters do begin
             for i:= c.Count-1 downto 0 do begin
               r:= @fList[c[i]];
-              if CheckInsertIntoCluster(chosenCluster, r) then begin
-                // this image could have gone into chosenCluster
-                chosenCluster.Add(c[i]);
+              if chosenCluster.CheckInsertIntoCluster(r, fList, fLimit) then begin
+                // this image could have gone into chosenCluster         
+                chosenCluster.Append(c[i]);
                 c.Delete(i);
               end;
             end;
             // did we find a new home for all items in that cluster?
-            if c.Count = 0 then
+            if c.Count = 0 then begin 
               fClusters.Remove(c);
+            end;
+            c.Release;
           end;
         end;
       finally
         FreeAndNil(matchclusters);
-        fClustersLock.Release;
       end;
 
-      if not Assigned(chosenCluster) then begin
-        c:= TCluster.Create;
-        c.Add(cursor);
-        fClustersLock.Acquire;
-        try
-          fClusters.Add(c);
-        finally
-          fClustersLock.Release;
-        end;
-      end;  
+      if Assigned(chosenCluster) then
+        chosenCluster.Release
+      else begin
+        c:= TCluster.Create([cursor]);
+        fClusters.Append(c);
+      end;
     end;
 
     fNotifier.NotifyClassfierProgress;

@@ -116,7 +116,7 @@ begin
     c:= list.Items.Objects[idx] as TCluster;
     inc(cluster_seen);
     b:= false;
-    for i in c do begin
+    for i in c.Items do begin
       im:= @imageInfos[i];
       b:= im^.Mark in skipstate;
       if b then
@@ -126,8 +126,8 @@ begin
       inc(cluster_skipped);
       continue;
     end;
-    if (specialize TListTool<Integer>).FindSmallestValue(c, @Compare, m) >= 0 then begin
-      for i in c do begin
+    if (specialize TListTool<Integer>).FindSmallestValue(c.Items, @Compare, m) >= 0 then begin
+      for i in c.Items do begin
         im:= @imageInfos[i];
         if i = m then
           im^.Mark:= imUnmarked
