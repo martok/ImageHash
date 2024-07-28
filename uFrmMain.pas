@@ -293,6 +293,11 @@ begin
     pbLoader.Position:= 0;
     pbLoader.Max:= length(fImageInfos);
 
+    if Length(fImageInfos) = 0 then begin
+      lbStatus.Caption:= 'No files found';
+      Exit;
+    end;
+
     t1:= GetTickCount64;
 
     lbStatus.Caption:= 'Setup classifier...';
