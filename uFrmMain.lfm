@@ -521,9 +521,9 @@ object fmMain: TfmMain
     AnchorSideBottom.Control = pcSidebar
     AnchorSideBottom.Side = asrBottom
     Left = 0
-    Height = 84
+    Height = 28
     Hint = 'About ImageHash...'
-    Top = 616
+    Top = 672
     Width = 28
     Anchors = [akLeft, akBottom]
     Glyph.Data = {
