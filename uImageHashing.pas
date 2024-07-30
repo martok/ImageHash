@@ -35,6 +35,9 @@ function hashToString(hash: PImageHash): string;
 
 implementation
 
+uses
+  SysConst;
+
 function imgLoadFromFile(aFile: string): TLazIntfImage;
 var
   source: TLazIntfImage;
@@ -47,6 +50,8 @@ begin
     source:= TLazIntfImage.Create(0,0);
     source.SetRawImage(sourceformat);
     source.LoadFromFile(aFile);
+    if not Assigned(source.PixelData) then
+      raise EOutOfMemory.Create(SOutOfMemory);
     Result:= source;
   except
     FreeAndNil(source);
