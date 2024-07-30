@@ -355,9 +355,9 @@ end;
 
 procedure TfmMain.NotifyProgress;  
 var
-  c: TCluster;
-  oldtop: integer;
+  oldtop, i: integer;
   clusters: TClusterList;
+  c: TCluster;
 begin                      
   if pbLoader.Max <> fNotifier.TotalCount then begin
     pbLoader.Max:= fNotifier.TotalCount;
@@ -374,21 +374,37 @@ begin
     clusters:= TClusterList.Create;
     try
       fClassifier.GetClusters(clusters);
-      if clusters.Count <> lbClusters.Count then begin
-        oldtop:= lbClusters.TopIndex;
+      if clusters.Count = 0 then begin
+        ClearClustersList;
+      end else begin
         lbClusters.Items.BeginUpdate;
-        try
-          ClearClustersList;
-          for c in clusters do begin
-            lbClusters.AddItem(IntToStr(lbClusters.Items.Count), c.AddRefed);
+        try       
+          oldtop:= lbClusters.TopIndex;
+          // delete extra elements (when clusters have been merged)
+          for i:= lbClusters.Items.Count - 1 downto clusters.Count do begin
+            c:= lbClusters.Items.Objects[i] as TCluster;
+            lbClusters.Items.Delete(i);
             c.Release;
           end;
+          // replace existing items
+          for i:= 0 to lbClusters.Items.Count - 1 do begin
+            c:= lbClusters.Items.Objects[i] as TCluster;
+            // skip addref/release if nothing changed
+            if clusters[i] <> c then begin
+              lbClusters.Items.Objects[i]:= clusters[i].AddRefed;
+              c.Release;
+            end;
+          end;
+          // add new empty items
+          for i:= lbClusters.Items.Count to clusters.Count - 1 do begin
+            lbClusters.AddItem('', clusters[i].AddRefed);
+          end;
+          lbClusters.TopIndex:= oldtop;
         finally
           lbClusters.Items.EndUpdate;
         end;
-        lbClusters.TopIndex:= oldtop;
-      end else
         lbClusters.Invalidate;
+      end;
     finally
       FreeAndNil(clusters);
     end;
