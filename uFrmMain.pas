@@ -62,8 +62,6 @@ type
     procedure FormCreate(Sender: TObject);
     procedure lbClustersDrawItem(Control: TWinControl; Index: Integer;
       ARect: TRect; State: TOwnerDrawState);
-    procedure lbClustersMeasureItem(Control: TWinControl; Index: Integer;
-      var AHeight: Integer);
     procedure lbClustersMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
     procedure FormDestroy(Sender: TObject);
@@ -200,6 +198,7 @@ begin
     c.Release;
   end;
   lbClusters.Items.Clear;
+  lbClusters.ItemHeight:= seThumbSize.Value + 2;
 end;
 
 function TfmMain.GetImageInfo(const Index: Integer): PImageInfoItem;
@@ -504,7 +503,6 @@ begin
   fAbortFlag:= true;
 end;
 
-
 procedure TfmMain.lbClustersMouseMove(Sender: TObject; Shift: TShiftState; X,
   Y: Integer);
 var
@@ -580,12 +578,6 @@ begin
       FreeAndNil(bmp);
     end;
   end;
-end;
-
-procedure TfmMain.lbClustersMeasureItem(Control: TWinControl; Index: Integer;
-  var AHeight: Integer);
-begin
-  AHeight:= seThumbSize.Value + 2;
 end;
 
 procedure TfmMain.lbClustersMouseDown(Sender: TObject; Button: TMouseButton;

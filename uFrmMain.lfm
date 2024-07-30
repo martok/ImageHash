@@ -183,10 +183,9 @@ object fmMain: TfmMain
         ItemHeight = 0
         Options = []
         ParentFont = False
-        Style = lbOwnerDrawVariable
+        Style = lbOwnerDrawFixed
         TabOrder = 0
         OnDrawItem = lbClustersDrawItem
-        OnMeasureItem = lbClustersMeasureItem
         OnMouseDown = lbClustersMouseDown
         OnMouseLeave = lbClustersMouseLeave
         OnMouseMove = lbClustersMouseMove
