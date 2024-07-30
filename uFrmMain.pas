@@ -525,7 +525,7 @@ begin
   if fHoverImage = im then
     exit;
   fHoverImage:= im;
-  imHoverImage.Picture.Bitmap.Assign(im^.Thumbnail);
+  imHoverImage.Picture.Bitmap.LoadFromIntfImage(im^.Thumbnail);
   imHoverImage.Refresh;
   fullname:= im^.FullName(fSourcePaths);
   lbHoverfile.Caption:= Format('%s', [fullname]);
