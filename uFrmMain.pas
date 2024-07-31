@@ -234,6 +234,7 @@ begin
   meLog.Clear;
   FreeClassifier;
   FreeData;
+  fNotifier.Reset;
 
   btnStartStopLoader.ImageIndex:= IMAGE_SCAN_STOP;
   tsScanSetup.Enabled:= false;
@@ -271,7 +272,7 @@ begin
       scanners[i].Free;
 
     lbStatus.Caption:= 'Initialize...';
-    fNotifier.StartProcess(Length(fImageInfos));
+    fNotifier.StartHash(Length(fImageInfos));
 
     if Length(fImageInfos) = 0 then begin
       lbStatus.Caption:= 'No files found';
@@ -304,7 +305,7 @@ begin
     SetLength(loaders, 0);
 
     if loadermemerror then begin
-      meLog.Lines.Add('- had EOutOfMemory, rerunning errors single-threaded');
+      meLog.Lines.Add('- OutOfMemory encountered, rerunning failed single-threaded');
       // reflag all that are still at "working" - threads are finished, they are all SawMemoryError cases
       for i:= 0 to high(fImageInfos) do
         InterlockedCompareExchange(fImageInfos[i].Status, STATUS_NONE, STATUS_WORKING);
@@ -319,7 +320,9 @@ begin
       loaders[0].Notifier:= fNotifier;
       loaders[0].Start;
       WaitForMultipleThreads(@loaders[0], length(loaders), @InteractiveWait, @fAbortFlag);
+      meLog.Lines.Add('- Done, wait for Classifier to finish.');
     end;
+    fNotifier.NotifyHashDone;
     WaitForMultipleThreads(@fClassifier, 1, @InteractiveWait, @fAbortFlag);
 
     t2:= GetTickCount64;  
@@ -343,7 +346,7 @@ end;
 procedure TfmMain.RunClassifier;
 begin
   FreeClassifier;
-  fNotifier.Classified:= 0;
+  fNotifier.StartClassifier(Length(fImageInfos));
   fClassifier:= TClassifierThread.Create;
   fClassifier.List:= PImageInfoList(GetImageInfo(0));
   fClassifier.Count:= Length(fImageInfos);
@@ -353,7 +356,40 @@ begin
   fClassifier.Start;
 end;   
 
-procedure TfmMain.NotifyProgress;  
+procedure TfmMain.NotifyProgress;
+
+  function FormatTime(Seconds: Integer): string;
+  var
+    h, m, s: integer;
+  begin
+    DivMod(Seconds, 3600, h, Seconds);
+    DivMod(Seconds, 60, m, s);
+    Result:= Format('%0.2d:%0.2d', [m, s]);
+    if h>0 then
+      Result:= Format('%0.2d:', [h]) + Result;
+  end;
+
+  procedure UpdateETA(pb: TProgressBar; startTime: QWord);
+  var
+    progress,
+    elapsed, total: Single;
+    s: string;
+  begin
+    if startTime = NOT_RUNNING then begin
+      pb.Hint:= '';
+      Exit;
+    end;
+    elapsed:= (GetTickCount64 - startTime) * 0.001;
+    progress:= pb.Position / Max(pb.Max, 1);
+    total:= elapsed / Max(0.00001, progress);
+    s:= Format('%d/%d, %.1f%%'+sLineBreak+'Elapsed: %s', [pb.Position, pb.Max, progress * 100, FormatTime(trunc(elapsed))]);
+    if total > 24*3600 then
+      pb.Hint:= s
+    else
+      pb.Hint:= s + sLineBreak + Format('ETA: %s', [FormatTime(Ceil(total - elapsed))]);
+  end;
+
+
 var
   oldtop, i: integer;
   clusters: TClusterList;
@@ -409,6 +445,9 @@ begin
       FreeAndNil(clusters);
     end;
   end;
+
+  UpdateETA(pbLoader, fNotifier.LoaderStarted);
+  UpdateETA(pbClassifier, fNotifier.ClassifierStarted);
 end;
 
 procedure TfmMain.InteractiveWait;

@@ -427,6 +427,7 @@ begin
     fNotifier.NotifyClassfierProgress;
     inc(cursor);
   end;
+  fNotifier.NotifyClassfierDone;
 end;
 
 end.
