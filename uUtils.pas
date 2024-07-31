@@ -55,8 +55,11 @@ begin
     until a[i].Finished;
   end;
   // Make sure any queued events are processed before returning to where the threads may be freed
-  if GetCurrentThreadId = MainThreadID then
-    CheckSynchronize();
+  // This should be done by the callback function
+  if GetCurrentThreadId = MainThreadID then begin
+    if Assigned(CB) then
+      CB();
+  end;
 end;
 
 { TListTool }
