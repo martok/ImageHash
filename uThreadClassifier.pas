@@ -100,7 +100,7 @@ function hashWithinRange(i1, i2: PImageInfoItem; Limit: integer): boolean; //inl
 implementation
 
 uses
-  sortbase;
+  sortbase, uUtils;
 
 function hashWithinRange(i1, i2: PImageInfoItem; Limit: integer): boolean; //inline;
 var
@@ -121,25 +121,25 @@ begin
   }
   // 0 deg relative error
   Result:= (
-    PopCnt(h1000 xor h2000) +
-    PopCnt(h1090 xor h2090) +
-    PopCnt(h1180 xor h2180) <= 3*Limit
+    GetBitCount64(h1000 xor h2000) +
+    GetBitCount64(h1090 xor h2090) +
+    GetBitCount64(h1180 xor h2180) <= 3*Limit
   );
   // 90 deg relative error
   Result:= Result or (
-    PopCnt(h1000 xor h2090) +
-    PopCnt(h1090 xor h2180) <= 2*Limit
+    GetBitCount64(h1000 xor h2090) +
+    GetBitCount64(h1090 xor h2180) <= 2*Limit
   );
   // 180 deg relative error
   Result:= Result or (
-    PopCnt(h1000 xor h2180) +
-    PopCnt(h1180 xor h2000) <= 2*Limit
+    GetBitCount64(h1000 xor h2180) +
+    GetBitCount64(h1180 xor h2000) <= 2*Limit
     // 90 point away from each other
   );
   // 270 deg relative error
   Result:= Result or (
-    PopCnt(h1090 xor h2000) +
-    PopCnt(h1180 xor h2090) <= 2*Limit
+    GetBitCount64(h1090 xor h2000) +
+    GetBitCount64(h1180 xor h2090) <= 2*Limit
   );
 end;
 

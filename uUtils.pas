@@ -32,7 +32,9 @@ type
 function GetFileInfos(AFileName: string; out AInfos: TSearchRec): boolean;
 
 function SendFilesToTrash(AFileNames: TStringArray): boolean;
-
+       
+function GetBitCount32(const Num: DWord): NativeUInt; inline;
+function GetBitCount64(const Num: QWord): NativeUInt; inline;
 
 implementation
 
@@ -134,6 +136,28 @@ begin
   fop.pFrom:= PWideChar(ws);
   Result:= 0 = SHFileOperationW(@fop);
 end;
+
+
+{$AsmMode intel}
+function GetBitCount32(const Num: DWord): NativeUInt; inline; assembler; nostackframe;
+asm
+  POPCNT @result, num
+end;
+
+{$IFDEF CPUX86}  
+function GetBitCount64(const Num: QWord): NativeUInt; inline;
+begin
+  Result:= GetBitCount32(Lo(Num)) + GetBitCount32(Hi(Num));
+end;
+
+{$ELSE}
+
+function GetBitCount64(const Num: QWord): NativeUInt; inline; assembler; nostackframe;
+asm
+  POPCNT @result, num
+end;
+
+{$ENDIF}
 
 end.
 
