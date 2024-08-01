@@ -19,7 +19,8 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="3"/>
-      <BuildNr Value="31"/>
+      <RevisionNr Value="1"/>
+      <BuildNr Value="34"/>
       <StringTable CompanyName="Martok" FileDescription="ImageHash"/>
     </VersionInfo>
     <BuildModes Count="2">
