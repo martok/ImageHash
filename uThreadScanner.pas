@@ -5,7 +5,7 @@ unit uThreadScanner;
 interface
 
 uses
-  Classes, SysUtils, FileUtil;
+  Classes, SysUtils, uFileSearcher;
 
 type
   TFileScannerThread = class(TThread)
@@ -15,7 +15,7 @@ type
     fList: TStringList;
   protected
     procedure Execute; override;
-    procedure FileFoundEvent(FileIterator: TFileIterator);
+    procedure FileFoundEvent(FileIterator: TMyFileIterator);
   public
     constructor Create;
     destructor Destroy; override;
@@ -45,21 +45,22 @@ end;
 
 procedure TFileScannerThread.Execute;
 var
-  Searcher: TFileSearcher;
+  Searcher: TMyFileSearcher;
 begin
   fPath:= IncludeTrailingPathDelimiter(fPath);
-  Searcher := TFileSearcher.Create;
+  Searcher := TMyFileSearcher.Create;
   try
     Searcher.OnFileFound:= @FileFoundEvent;
     Searcher.DirectoryAttribute := faDirectory;
-    Searcher.Search(fPath, fFilter, true);
+    Searcher.SearchMask:= fFilter;
+    Searcher.Search(fPath);
   finally
     Searcher.Free;
   end;
   fList.Sort;
 end;
 
-procedure TFileScannerThread.FileFoundEvent(FileIterator: TFileIterator);
+procedure TFileScannerThread.FileFoundEvent(FileIterator: TMyFileIterator);
 var
   s: string;
 begin
