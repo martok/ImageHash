@@ -13,6 +13,7 @@ type
     fPath: string;
     fFilter: string;
     fList: TStringList;
+    fSubDirs: boolean;
   protected
     procedure Execute; override;
     procedure FileFoundEvent(FileIterator: TMyFileIterator);
@@ -21,6 +22,7 @@ type
     destructor Destroy; override;
     property Path: string read fPath write fPath;
     property Filter: string read fFilter write fFilter;
+    property SubDirs: boolean read fSubDirs write fSubDirs;
     property List: TStringList read fList;
   end;
 
@@ -33,6 +35,7 @@ begin
   inherited Create(true);
   FreeOnTerminate:= false;
   fPath:= '';
+  fSubDirs:= true;
   fFilter:= '*.*';
   fList:= TStringList.Create;
 end;
@@ -53,6 +56,7 @@ begin
     Searcher.OnFileFound:= @FileFoundEvent;
     Searcher.DirectoryAttribute := faDirectory;
     Searcher.SearchMask:= fFilter;
+    Searcher.SearchSubDirs:= fSubDirs;
     Searcher.Search(fPath);
   finally
     Searcher.Free;

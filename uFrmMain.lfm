@@ -10,6 +10,7 @@ object fmMain: TfmMain
   DesignTimePPI = 120
   Position = poDefaultPosOnly
   ShowHint = True
+  LCLVersion = '3.99.0.0'
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -125,15 +126,6 @@ object fmMain: TfmMain
           Align = alClient
           ClientHeight = 424
           ClientWidth = 307
-          inherited mePaths: TMemo
-            Height = 392
-            Width = 307
-          end
-          inherited dePaths: TDirectoryEdit
-            Width = 307
-            Directory = ''
-            Text = ''
-          end
         end
       end
       object GroupBox1: TGroupBox
@@ -224,7 +216,7 @@ object fmMain: TfmMain
         end
         object ToolButton1: TToolButton
           Left = 205
-          Height = 28
+          Height = 5
           Top = 0
           Caption = 'ToolButton1'
           Style = tbsDivider
@@ -238,7 +230,7 @@ object fmMain: TfmMain
         end
         object ToolButton2: TToolButton
           Left = 260
-          Height = 28
+          Height = 8
           Top = 0
           Caption = 'ToolButton2'
           Style = tbsSeparator

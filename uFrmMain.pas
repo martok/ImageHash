@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, GraphType, CheckLst, Spin, ComCtrls,
-  Buttons, uNotifier, uThreadHashing, uThreadClassifier, uFrmPathEditor, uProgramInfoDialog, Types;
+  Buttons, EditBtn, uNotifier, uThreadHashing, uThreadClassifier, uFrmPathEditor, uProgramInfoDialog, Types;
 
 type
 
@@ -230,6 +230,7 @@ var
   loaders: array of TImageHashThread;
   t1,t2: Int64;
   loadermemerror: Boolean;
+  itm: TDirectoryEntry;
 begin
   meLog.Clear;
   FreeClassifier;
@@ -244,12 +245,15 @@ begin
 
     lbStatus.Caption:= 'Creating file list...';
     scanners:= nil;
-    fSourcePaths.Assign(frmPathEditor1.Items);
-    for i:= 0 to fSourcePaths.Count - 1 do begin
-      if not DirectoryExists(fSourcePaths[i]) then
+    fSourcePaths.Clear;
+    for i:= 0 to frmPathEditor1.List.Count - 1 do begin
+      itm:= frmPathEditor1.List[i];
+      if not DirectoryExists(itm.Path) then
         continue;
+      fSourcePaths.Add(itm.Path);
       scanner:= TFileScannerThread.Create;
-      scanner.Path:= fSourcePaths[i];
+      scanner.Path:= itm.Path;
+      scanner.SubDirs:= itm.IncludeSubdirs;
       scanner.Filter:= filter;
       scanner.Start;
       Insert(scanner, scanners, length(scanners));

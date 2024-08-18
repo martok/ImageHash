@@ -11,39 +11,117 @@ object frmPathEditor: TfrmPathEditor
   TabOrder = 0
   DesignLeft = 391
   DesignTop = 10
-  object mePaths: TMemo
+  object DG: TDrawGrid
     Left = 0
-    Height = 268
-    Hint = 'Ctrl+Shift+Del = Delete folder line'#13#10'Ctrl+Shift+Up/Down = Move folder line'#13#10'Esc = Select current folder line'
-    Top = 32
-    Width = 400
-    Align = alClient
-    HideSelection = False
-    ParentFont = False
-    ScrollBars = ssAutoBoth
-    TabOrder = 0
-    WordWrap = False
-    OnChange = mePathsChange
-    OnClick = mePathsClick
-    OnEditingDone = mePathsEditingDone
-    OnKeyDown = mePathsKeyDown
-    OnKeyPress = mePathsKeyPress
-  end
-  object dePaths: TDirectoryEdit
-    Left = 0
-    Height = 28
+    Height = 300
     Top = 0
     Width = 400
-    Directory = 'dePaths'
-    OnAcceptDirectory = dePathsAcceptDirectory
-    DialogOptions = [ofPathMustExist, ofEnableSizing, ofViewDetail]
-    ShowHidden = False
-    ButtonWidth = 29
-    NumGlyphs = 1
-    FocusOnButtonClick = True
-    Align = alTop
-    MaxLength = 0
-    TabOrder = 1
-    Text = 'dePaths'
+    Align = alClient
+    AutoFillColumns = True
+    ColCount = 3
+    Columns = <    
+      item
+        Title.Caption = 'Path'
+        Width = 354
+      end    
+      item
+        ButtonStyle = cbsCheckboxColumn
+        MinSize = 28
+        MaxSize = 28
+        SizePriority = 0
+        Title.ImageIndex = 0
+        Title.ImageLayout = blGlyphTop
+        Title.Caption = ''
+        Width = 28
+      end>
+    DefaultColWidth = 14
+    MouseWheelOption = mwGrid
+    Options = [goFixedVertLine, goFixedHorzLine, goHorzLine, goRangeSelect, goRowMoving, goEditing, goRowSelect, goSmoothScroll]
+    PopupMenu = pmPathList
+    TabOrder = 0
+    TitleImageList = ilPathList
+    OnColRowMoved = DGColRowMoved
+    OnDrawCell = DGDrawCell
+    OnGetCheckboxState = DGGetCheckboxState
+    OnGetEditText = DGGetEditText
+    OnKeyDown = DGKeyDown
+    OnMouseDown = DGMouseDown
+    OnSelectEditor = DGSelectEditor
+    OnSelection = DGSelection
+    OnSetCheckboxState = DGSetCheckboxState
+    OnSetEditText = DGSetEditText
+    ColWidths = (
+      14
+      354
+      28
+    )
+  end
+  object ilPathList: TImageList
+    Left = 48
+    Top = 152
+    Bitmap = {
+      4C7A050000001000000010000000090300000000000078DAD5564B6B1351143E
+      2646411ADCB812775D2AA27B173E104114411029F858A8D55A75E18BAA08FE03
+      5782D2EECDCC448C685245A428580B0D34E94C424117AEB48D0B51D18D9AF89D
+      3849C6993BF7DE994425031F7372CEF9CEEB9E9BC43169996350C345DD3129E1
+      B04E00123CCCAB98946ACA9D58F500247C523CE0A63986C866BB7C4F0F5284E5
+      C7FBA7B4068356896A68C7B628CD9F87765183E19545F0F2D143BDF8503C1F7E
+      CAF728C97DCE5B419F666ECF6CE3E477ACF0DC9E1E13223F3B64CEAD3C5E5956
+      47AF9FA873E8F7BC71EBC0437FE046F3FE4FE24E6F6FE97086DB58C7B680BF0F
+      B6493BC1CDC0DF6AF3210366C5A21D1AFC4B558376E39D5FB84B6B192CDB16ED
+      01FF828A8F1D3D0DFF83F0DF8FBAAF335C7908FA1115BF9AA10DF01D9F9AA2E5
+      F326CD3058464F13952CAD57F1DD7E9F154D5A8D38B72A199A6019B99FEB70DD
+      1E8E20DF79DCFB7588F50077EC227048975FBC4329F05E72DD8895AB5A348B78
+      2B74F9AD3343CDC730F303801185CBF931F359D43CCD798169D629CFDEA0ABC8
+      BB08BC45CEDB98DF4DE8CE550CC8D0B10DB1C6445CF89F84FD136A3E0C3C85FC
+      119881FE05DE9F3183273C5796F13E2EE8D781EF1537D63E7CFE6E6769A39DA1
+      41E4FC815AF6B66A447C3B90DFA46F6D1F93AE797D04B1BF08F6FE15701F318E
+      B29D67EF893DECD6CDF5E7789E81FC59DA0C5B19780FBFCB82FAC6DCD996216F
+      529C7D43829C6A97D82F4CCF3DF27D7E5DA09571F89C9B6B60C4E17BD14DBF7E
+      7ED47E75F961FDEAF245FDEAF26533ED47BEECFCA3E6D7B5FD2BBE0E3472947D
+      9C3AF66F41F17B9D97E5F0DAD837EA3D8A687FC335FB72DABAFC38671085DFC3
+      73FD8ADFD7AD71F70A67BA05B625FE8FA7C317ED11E7E73ABAD96BD55E86E5F7
+      EBFB393FCEE0912C7EDCDDD1FD5EE866777B8D1415CE3024F61186C896A0FCA9
+      019A5B4A53E9037CCE0AECA31DFBE3D130FE1A7AD7F0C768713BB6209F91A4C2
+      898E5FB919234993C37E9D6A06F0AFB1FF00956A8CDFF25C4D369B60AFA545E6
+      89FAF99BFC6EEA17CD4A3453D9F9C73DBF6EF747B59F3AF6FF815F784F6EBB
+    }
+  end
+  object pmPathList: TPopupMenu
+    Images = ilPathList
+    Left = 48
+    Top = 222
+    object miCut: TMenuItem
+      Caption = 'Cu&t'
+      ImageIndex = 1
+      ShortCut = 16472
+      OnClick = miCutClick
+    end
+    object miCopy: TMenuItem
+      Caption = '&Copy'
+      ImageIndex = 2
+      ShortCut = 16451
+      OnClick = miCopyClick
+    end
+    object miPaste: TMenuItem
+      Caption = '&Paste'
+      ImageIndex = 3
+      ShortCut = 16470
+      OnClick = miPasteClick
+    end
+    object miDelete: TMenuItem
+      Caption = '&Delete'
+      ImageIndex = 4
+      ShortCut = 46
+      OnClick = miDeleteClick
+    end
+    object Separator1: TMenuItem
+      Caption = '-'
+    end
+    object miSelectAll: TMenuItem
+      Caption = 'Select &All'
+      ShortCut = 16449
+      OnClick = miSelectAllClick
+    end
   end
 end
