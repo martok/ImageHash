@@ -1,5 +1,5 @@
 # ImageHash
-Like [Visipics]([http://www.visipics.info/index.php?title=Main_Page](https://web.archive.org/web/20140723000216/http://www.visipics.info/index.php?title=Main_Page)), but faster.
+Like [Visipics](https://web.archive.org/web/20140723000216/http://www.visipics.info/index.php?title=Main_Page), but faster.
 
 Written in Lazarus and Freepascal.
 
