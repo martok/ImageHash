@@ -2,3 +2,6 @@
 	path = lib/ConcurrentMM
 	url = git@github.com:martok/ConcurrentMM.git
 	branch = main
+[submodule "lib/pascal-webp"]
+	path = lib/pascal-webp
+	url = https://github.com/Xelitan/Pure-Pascal-Webp-for-Delphi-Lazarus-Free-Pascal.git

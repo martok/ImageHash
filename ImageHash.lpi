@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="12"/>
+    <Version Value="13"/>
     <PathDelim Value="\"/>
     <General>
       <Flags>
@@ -34,7 +34,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);lib\ConcurrentMM"/>
-            <OtherUnitFiles Value="lib\fpreadjpeg-turbo;lib\ConcurrentMM"/>
+            <OtherUnitFiles Value="lib\fpreadjpeg-turbo;lib\ConcurrentMM;lib\fpreadwebp"/>
             <UnitOutputDirectory Value="obj\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -79,7 +79,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="14">
+    <Units Count="15">
       <Unit0>
         <Filename Value="ImageHash.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -145,6 +145,10 @@
         <Filename Value="uFileSearcher.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit13>
+      <Unit14>
+        <Filename Value="lib\fpreadwebp\FPReadWebP.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit14>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -155,7 +159,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);lib\ConcurrentMM"/>
-      <OtherUnitFiles Value="lib\fpreadjpeg-turbo;lib\ConcurrentMM"/>
+      <OtherUnitFiles Value="lib\fpreadjpeg-turbo;lib\ConcurrentMM;lib\pascal-webp;lib\fpreadwebp"/>
       <UnitOutputDirectory Value="obj\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>

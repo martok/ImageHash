@@ -35,7 +35,7 @@ uses
   uThreadClassifier, uFrmMain, uThreadHashing, uUtils;
 
 const
-  CompressedFileExtensions = '.jpeg.jpg.jpe.jfif.png.gif.tif.tiff';
+  CompressedFileExtensions = '.jpeg.jpg.jpe.jfif.png.gif.tif.tiff.webp';
 
 { TfrmAutoMark }
 

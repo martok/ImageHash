@@ -17,6 +17,7 @@ uses
   {$IFDEF USE_JPEGTURBO}
   FPReadJPEGTurbo,
   {$ENDIF}
+  FPReadWebP,
   uFrmMain, uImageHashing, uThreadScanner, uThreadHashing, uThreadClassifier,
   uUtils, uFrmAutoMark, uFrmPathEditor, uNotifier, uFileSearcher;
 

@@ -22,6 +22,10 @@ The TurboJPEG bindings are by D. R. Commander.
 
  * https://www.djmaster.com/freepascal/bindings/turbojpeg.php
 
+WebP support is provided by "Webp for Delphi and Lazarus" by Xelitan.
+
+ * https://github.com/Xelitan/Pure-Pascal-Webp-for-Delphi-Lazarus-Free-Pascal
+
 ## License
 
 The source code is licensed under the MIT license.
