@@ -1,12 +1,12 @@
 object frmAutoMark: TfrmAutoMark
   Left = 507
-  Height = 223
+  Height = 241
   Top = 188
-  Width = 242
+  Width = 276
   BorderStyle = bsDialog
   Caption = 'AutoMark'
-  ClientHeight = 223
-  ClientWidth = 242
+  ClientHeight = 241
+  ClientWidth = 276
   Position = poScreenCenter
   LCLVersion = '4.99.0.0'
   object Label1: TLabel
@@ -40,61 +40,92 @@ object frmAutoMark: TfrmAutoMark
   object cbLargerFile: TCheckBox
     Left = 38
     Height = 19
-    Top = 90
+    Top = 115
     Width = 95
     Caption = 'Larger File Size'
     Checked = True
     State = cbChecked
-    TabOrder = 2
+    TabOrder = 3
   end
   object cbDirectoryOrder: TCheckBox
     Left = 38
     Height = 19
-    Top = 141
+    Top = 166
     Width = 138
     Caption = 'Higher Directory Order'
     Checked = True
     State = cbChecked
-    TabOrder = 4
+    TabOrder = 5
   end
   object btnMark: TButton
     Left = 13
     Height = 25
-    Top = 173
+    Top = 198
     Width = 75
     Caption = 'Mark'
     ModalResult = 1
-    TabOrder = 5
+    TabOrder = 6
     OnClick = btnMarkClick
   end
   object Button2: TButton
     Left = 154
     Height = 25
-    Top = 173
+    Top = 198
     Width = 75
     Cancel = True
     Caption = 'Close'
     ModalResult = 2
-    TabOrder = 6
+    TabOrder = 7
   end
   object cbOnlyUnmarked: TCheckBox
     Left = 13
     Height = 19
-    Top = 198
+    Top = 223
     Width = 159
     Caption = 'Only in Unmarked Clusters'
     Checked = True
     State = cbChecked
-    TabOrder = 7
+    TabOrder = 8
   end
   object cbOlderFile: TCheckBox
     Left = 38
     Height = 19
-    Top = 115
+    Top = 140
     Width = 68
     Caption = 'Older File'
     Checked = True
     State = cbChecked
-    TabOrder = 3
+    TabOrder = 4
+  end
+  object cbColorBW: TCheckBox
+    Left = 38
+    Height = 19
+    Top = 90
+    Width = 64
+    Caption = 'Image in'
+    Checked = True
+    State = cbChecked
+    TabOrder = 2
+    OnChange = cbColorBWChange
+  end
+  object cbColorBWSel: TComboBox
+    AnchorSideLeft.Control = cbColorBW
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = cbColorBW
+    AnchorSideTop.Side = asrCenter
+    Left = 110
+    Height = 23
+    Top = 88
+    Width = 117
+    BorderSpacing.Left = 8
+    ItemHeight = 15
+    ItemIndex = 0
+    Items.Strings = (
+      'Color'
+      'Monochrome'
+    )
+    Style = csDropDownList
+    TabOrder = 9
+    Text = 'Color'
   end
 end

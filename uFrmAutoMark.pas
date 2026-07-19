@@ -19,7 +19,10 @@ type
     Button2: TButton;
     cbOnlyUnmarked: TCheckBox;
     cbOlderFile: TCheckBox;
+    cbColorBW: TCheckBox;
+    cbColorBWSel: TComboBox;
     procedure btnMarkClick(Sender: TObject);
+    procedure cbColorBWChange(Sender: TObject);
   private
   public
   end;
@@ -32,7 +35,7 @@ implementation
 {$R *.lfm}
 
 uses
-  uThreadClassifier, uFrmMain, uThreadHashing, uUtils;
+  uThreadClassifier, uFrmMain, uThreadHashing, uUtils, uImageHashing;
 
 const
   CompressedFileExtensions = '.jpeg.jpg.jpe.jfif.png.gif.tif.tiff.webp';
@@ -41,7 +44,7 @@ const
 
 procedure TfrmAutoMark.btnMarkClick(Sender: TObject);
 var
-  list: TListBox; 
+  list: TListBox;
   sourcePaths: TStrings;
   imageInfos: PImageInfoList;
   c: TCluster;
@@ -65,7 +68,7 @@ var
         Exit(-1);
       if x<y then
         Exit(1);
-    end;    
+    end;
     if cbCompressedFile.Checked then begin
       x:= Pos(ExtractFileExt(im1^.Filename), CompressedFileExtensions);
       y:= Pos(ExtractFileExt(im2^.Filename), CompressedFileExtensions);
@@ -73,6 +76,23 @@ var
         Exit(-1);
       if (x=0) and (y<0) then
         Exit(1);
+    end;
+    if cbColorBW.Checked then begin
+      x:= Ord(imgIsMonoContent(im1^.Thumbnail));
+      y:= Ord(imgIsMonoContent(im2^.Thumbnail));
+      if cbColorBWSel.ItemIndex = 1 then begin
+        // keep mono
+        if x > y then
+          Exit(-1);
+        if x < y then
+          Exit(1);
+      end else begin
+        // keep color
+        if x > y then
+          Exit(1);
+        if x < y then
+          Exit(-1);
+      end;
     end;
     if cbLargerFile.Checked or cbOlderFile.Checked then begin
       GetFileInfos(im1^.FullName(sourcePaths), a1);
@@ -143,6 +163,11 @@ begin
              'Skipped clusters: %d'+sLineBreak+
              'Marked for deletion: %d', [cluster_seen, cluster_skipped, marked_delete]),
               mtInformation, [mbOK], 0);
+end;
+
+procedure TfrmAutoMark.cbColorBWChange(Sender: TObject);
+begin
+  cbColorBWSel.Enabled:= cbColorBW.Checked;
 end;
 
 end.

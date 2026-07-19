@@ -12,6 +12,7 @@ function imgLoadFromFile(aFile: string): TLazIntfImage;
 function imgConvertCompatibleGrey(source: TLazIntfImage): TLazIntfImage;
 function imgScaleCompatible(source: TLazIntfImage; Width, Height: integer; Interpolation: TFPCustomInterpolation = nil): TLazIntfImage;
 procedure imgGetData(img: TLazIntfImage; dest: PByte);
+function imgIsMonoContent(img: TLazIntfImage): boolean;
 
 const
   HASH_BITS = bitsizeof(QWORD);
@@ -37,6 +38,33 @@ implementation
 
 uses
   SysConst;
+
+
+function Max3(a, b, c: Byte): Byte;
+begin
+  if a > b then begin
+    if c > a then
+      Exit(c);
+    Exit(a);
+  end else begin
+    if c > b then
+      Exit(c);
+    Exit(b);
+  end;
+end;
+
+function Min3(a, b, c: Byte): Byte;
+begin
+  if a < b then begin
+    if c < a then
+      Exit(c);
+    Exit(a);
+  end else begin
+    if c < b then
+      Exit(c);
+    Exit(b);
+  end;
+end;
 
 function imgLoadFromFile(aFile: string): TLazIntfImage;
 var
@@ -125,6 +153,33 @@ begin
   end;
 end;
 
+function imgIsMonoContent(img: TLazIntfImage): boolean;
+var
+  rd: TRawImageDescription;
+  py, px: Integer;
+  lsource: PByte;
+  pw: Integer;
+  a, b: Byte;
+begin
+  rd:= img.DataDescription;
+  if rd.Format = ricfGray then
+    Exit(true);
+
+  pw:= rd.BitsPerPixel div 8;
+  // Due to compression and scaling, even greyscale images might not be monochrome anymore in RGB/A
+  for py:=0 to img.Height-1 do begin
+    lsource := img.GetDataLineStart(py);
+    for px:=0 to img.Width-1 do begin
+      a:= Max3(lsource[0], lsource[1], lsource[2]);
+      b:= Min3(lsource[0], lsource[1], lsource[2]);
+      if abs(a-b) > 2 then
+        Exit(False);
+      inc(lsource, pw);
+    end;
+  end;
+  Result:= True;
+end;
+
 procedure imgDataRotate90R(source, dest: PByte);
 var
   py, px: Integer;
@@ -205,7 +260,7 @@ begin
     inter:= source;
 
   // create thumbs
-  if thumbsize>0 then begin    
+  if thumbsize>0 then begin
     fac:= Max(inter.Width, inter.Height) / thumbsize;
     thumb^:= imgScaleCompatible(inter, Round(inter.Width/fac), Round(inter.Height/fac), TMitchelInterpolationOpt.Create);
   end;
