@@ -1,56 +1,55 @@
 object fmMain: TfmMain
   Left = 341
-  Height = 700
+  Height = 560
   Top = 186
-  Width = 1200
-  ClientHeight = 700
-  ClientWidth = 1200
-  Constraints.MinHeight = 400
-  Constraints.MinWidth = 1000
-  DesignTimePPI = 120
+  Width = 960
+  ClientHeight = 560
+  ClientWidth = 960
+  Constraints.MinHeight = 320
+  Constraints.MinWidth = 800
   Position = poDefaultPosOnly
   ShowHint = True
-  LCLVersion = '3.99.0.0'
+  LCLVersion = '4.99.0.0'
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnResize = FormResize
   object pcSidebar: TPageControl
     Left = 0
-    Height = 700
+    Height = 560
     Top = 0
-    Width = 355
-    ActivePage = tsScanSetup
+    Width = 284
+    ActivePage = tsScanResults
     Align = alLeft
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 2
     TabPosition = tpLeft
-    TabWidth = 150
+    TabWidth = 120
     object tsScanSetup: TTabSheet
       Caption = 'Setup'
-      ClientHeight = 692
-      ClientWidth = 321
+      ClientHeight = 552
+      ClientWidth = 253
       object GroupBox2: TGroupBox
         Left = 0
-        Height = 96
+        Height = 80
         Top = 0
-        Width = 321
+        Width = 253
         Align = alTop
         AutoSize = True
         Caption = 'Scan Settings'
         ChildSizing.LeftRightSpacing = 5
         ChildSizing.TopBottomSpacing = 5
-        ClientHeight = 71
-        ClientWidth = 317
+        ClientHeight = 60
+        ClientWidth = 249
         TabOrder = 2
         object Label1: TLabel
           AnchorSideLeft.Control = GroupBox2
           AnchorSideTop.Control = seThreads
           AnchorSideTop.Side = asrCenter
           Left = 5
-          Height = 20
+          Height = 15
           Top = 9
-          Width = 55
+          Width = 44
           Alignment = taRightJustify
           BorderSpacing.CellAlignVertical = ccaCenter
           Caption = 'Threads:'
@@ -60,13 +59,13 @@ object fmMain: TfmMain
           AnchorSideTop.Control = GroupBox2
           AnchorSideRight.Control = GroupBox2
           AnchorSideRight.Side = asrBottom
-          Left = 161
-          Height = 28
+          Left = 123
+          Height = 23
           Hint = 'Number of threads to use for loader.'#13#10'Recommended number is one less than number of CPU cores.'
           Top = 5
-          Width = 151
+          Width = 121
           Anchors = [akTop, akRight]
-          Constraints.MinWidth = 130
+          Constraints.MinWidth = 104
           MaxValue = 16
           MinValue = 1
           ParentFont = False
@@ -78,9 +77,9 @@ object fmMain: TfmMain
           AnchorSideTop.Control = seThumbSize
           AnchorSideTop.Side = asrCenter
           Left = 5
-          Height = 20
-          Top = 42
-          Width = 104
+          Height = 15
+          Top = 36
+          Width = 83
           Alignment = taRightJustify
           BorderSpacing.CellAlignVertical = ccaCenter
           Caption = 'Thumbnail Size:'
@@ -91,14 +90,14 @@ object fmMain: TfmMain
           AnchorSideTop.Side = asrBottom
           AnchorSideRight.Control = GroupBox2
           AnchorSideRight.Side = asrBottom
-          Left = 161
-          Height = 28
+          Left = 123
+          Height = 23
           Hint = 'Thumbnail size for cluster list.'
-          Top = 38
-          Width = 151
+          Top = 32
+          Width = 121
           Anchors = [akTop, akRight]
-          BorderSpacing.Top = 5
-          Constraints.MinWidth = 130
+          BorderSpacing.Top = 4
+          Constraints.MinWidth = 104
           MaxValue = 128
           MinValue = 16
           ParentFont = False
@@ -108,44 +107,72 @@ object fmMain: TfmMain
       end
       object Panel5: TGroupBox
         Left = 0
-        Height = 459
-        Top = 96
-        Width = 321
+        Height = 362
+        Top = 80
+        Width = 253
         Align = alClient
         Caption = 'Scan Paths'
         ChildSizing.LeftRightSpacing = 5
         ChildSizing.TopBottomSpacing = 5
-        ClientHeight = 434
-        ClientWidth = 317
+        ClientHeight = 342
+        ClientWidth = 249
         TabOrder = 1
         inline frmPathEditor1: TfrmPathEditor
           Left = 5
-          Height = 424
+          Height = 332
           Top = 5
-          Width = 307
+          Width = 239
           Align = alClient
-          ClientHeight = 424
-          ClientWidth = 307
+          ClientHeight = 332
+          ClientWidth = 239
+          DesignLeft = 313
+          DesignTop = 8
+          inherited DG: TDrawGrid
+            Height = 332
+            Width = 239
+            Columns = <            
+              item
+                PickList.Strings = (                )
+                Title.Caption = 'Path'
+                Width = 185
+              end            
+              item
+                ButtonStyle = cbsCheckboxColumn
+                MinSize = 22
+                MaxSize = 22
+                PickList.Strings = (                )
+                SizePriority = 0
+                Title.ImageIndex = 0
+                Title.ImageLayout = blGlyphTop
+                Title.Caption = ''
+                Width = 22
+              end>
+            ColWidths = (
+              11
+              185
+              22
+            )
+          end
         end
       end
       object GroupBox1: TGroupBox
         Left = 0
-        Height = 131
-        Top = 561
-        Width = 321
+        Height = 105
+        Top = 447
+        Width = 253
         Align = alBottom
         Caption = 'Image Type Filter'
         ChildSizing.LeftRightSpacing = 5
         ChildSizing.TopBottomSpacing = 5
-        ClientHeight = 106
-        ClientWidth = 317
+        ClientHeight = 85
+        ClientWidth = 249
         TabOrder = 0
         object clbFilter: TCheckListBox
           Left = 5
-          Height = 96
+          Height = 75
           Hint = 'Select which file types to load.'
           Top = 5
-          Width = 307
+          Width = 239
           Align = alClient
           ItemHeight = 0
           ParentFont = False
@@ -155,22 +182,22 @@ object fmMain: TfmMain
       object Splitter2: TSplitter
         Cursor = crVSplit
         Left = 0
-        Height = 6
-        Top = 555
-        Width = 321
+        Height = 5
+        Top = 442
+        Width = 253
         Align = alBottom
         ResizeAnchor = akBottom
       end
     end
     object tsScanResults: TTabSheet
       Caption = 'Results'
-      ClientHeight = 692
-      ClientWidth = 321
+      ClientHeight = 552
+      ClientWidth = 253
       object lbClusters: TListBox
         Left = 0
-        Height = 568
-        Top = 32
-        Width = 321
+        Height = 452
+        Top = 26
+        Width = 253
         Align = alClient
         ItemHeight = 0
         Options = []
@@ -184,10 +211,11 @@ object fmMain: TfmMain
       end
       object ToolBar1: TToolBar
         Left = 0
+        Height = 26
         Top = 0
-        Width = 321
-        ButtonHeight = 28
-        ButtonWidth = 50
+        Width = 253
+        ButtonHeight = 22
+        ButtonWidth = 40
         Caption = 'ToolBar1'
         EdgeBorders = []
         Flat = False
@@ -201,44 +229,44 @@ object fmMain: TfmMain
           OnClick = tbAutoMarkClick
         end
         object tbUnMark: TToolButton
-          Left = 75
+          Left = 62
           Hint = 'Remove all marks.'
           Top = 0
           Caption = 'UnMark'
           OnClick = tbUnMarkClick
         end
         object tbUnIgnore: TToolButton
-          Left = 135
+          Left = 112
           Hint = 'Remove all "ignore" marks.'
           Top = 0
           Caption = 'UnIgnore'
           OnClick = tbUnIgnoreClick
         end
         object ToolButton1: TToolButton
-          Left = 205
-          Height = 5
+          Left = 169
+          Height = 22
           Top = 0
           Caption = 'ToolButton1'
           Style = tbsDivider
         end
         object tbMarkedTrash: TToolButton
-          Left = 210
+          Left = 174
           Hint = 'Move all images marked as trash to the recycler.'
           Top = 0
           Caption = 'Trash'
           OnClick = tbMarkedTrashClick
         end
         object ToolButton2: TToolButton
-          Left = 260
-          Height = 8
+          Left = 214
+          Height = 22
           Top = 0
           Caption = 'ToolButton2'
           Style = tbsSeparator
         end
         object tbMarkInfo: TToolButton
-          Left = 268
+          Left = 1
           Hint = 'Quick Info.'
-          Top = 0
+          Top = 22
           Caption = '?'
           OnClick = tbMarkInfoClick
         end
@@ -246,18 +274,18 @@ object fmMain: TfmMain
       object Splitter3: TSplitter
         Cursor = crVSplit
         Left = 0
-        Height = 6
-        Top = 600
-        Width = 321
+        Height = 5
+        Top = 478
+        Width = 253
         Align = alBottom
         ResizeAnchor = akBottom
       end
       object meLog: TMemo
         Left = 0
-        Height = 86
+        Height = 69
         Hint = 'Technical information'
-        Top = 606
-        Width = 321
+        Top = 483
+        Width = 253
         Align = alBottom
         ParentFont = False
         ReadOnly = True
@@ -267,55 +295,55 @@ object fmMain: TfmMain
     end
   end
   object Splitter1: TSplitter
-    Left = 355
-    Height = 700
+    Left = 284
+    Height = 560
     Top = 0
-    Width = 6
+    Width = 5
     MinSize = 355
   end
   object pnWorkspace: TPanel
-    Left = 361
-    Height = 700
+    Left = 289
+    Height = 560
     Top = 0
-    Width = 839
+    Width = 671
     Align = alClient
     BorderSpacing.CellAlignVertical = ccaCenter
     BevelOuter = bvNone
-    ClientHeight = 700
-    ClientWidth = 839
+    ClientHeight = 560
+    ClientWidth = 671
     ParentFont = False
     TabOrder = 0
     object Panel1: TPanel
       Left = 0
-      Height = 95
+      Height = 76
       Top = 0
-      Width = 839
+      Width = 671
       Align = alTop
       BevelOuter = bvNone
       ChildSizing.HorizontalSpacing = 5
-      ClientHeight = 95
-      ClientWidth = 839
+      ClientHeight = 76
+      ClientWidth = 671
       TabOrder = 1
       object GroupBox4: TGroupBox
         Left = 0
-        Height = 90
+        Height = 72
         Top = 0
-        Width = 250
+        Width = 200
         Align = alLeft
         Caption = 'Loader'
         ChildSizing.LeftRightSpacing = 5
         ChildSizing.TopBottomSpacing = 5
-        ClientHeight = 65
-        ClientWidth = 246
-        Constraints.MaxWidth = 300
-        Constraints.MinHeight = 90
+        ClientHeight = 52
+        ClientWidth = 196
+        Constraints.MaxWidth = 240
+        Constraints.MinHeight = 72
         TabOrder = 0
         object lbStatus: TLabel
           AnchorSideLeft.Control = pbLoader
-          Left = 65
-          Height = 20
-          Top = 5
-          Width = 53
+          Left = 53
+          Height = 15
+          Top = 4
+          Width = 42
           BorderSpacing.CellAlignVertical = ccaCenter
           Caption = 'lbStatus'
           ParentFont = False
@@ -327,14 +355,14 @@ object fmMain: TfmMain
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = GroupBox4
           AnchorSideBottom.Side = asrBottom
-          Left = 65
-          Height = 28
-          Top = 32
-          Width = 176
+          Left = 53
+          Height = 22
+          Top = 25
+          Width = 138
           Anchors = [akLeft, akRight, akBottom]
-          BorderSpacing.Left = 5
+          BorderSpacing.Left = 4
           BorderSpacing.CellAlignVertical = ccaCenter
-          Constraints.MaxHeight = 28
+          Constraints.MaxHeight = 22
           ParentFont = False
           TabOrder = 1
         end
@@ -344,10 +372,10 @@ object fmMain: TfmMain
           AnchorSideBottom.Control = GroupBox4
           AnchorSideBottom.Side = asrBottom
           Left = 5
-          Height = 55
+          Height = 42
           Hint = 'Start/Stop the Loader process.'
           Top = 5
-          Width = 55
+          Width = 44
           Anchors = [akTop, akLeft, akBottom]
           Layout = blGlyphBottom
           Images = ilButtons
@@ -357,25 +385,25 @@ object fmMain: TfmMain
         end
       end
       object GroupBox3: TGroupBox
-        Left = 255
-        Height = 90
+        Left = 205
+        Height = 72
         Top = 0
-        Width = 480
+        Width = 384
         Align = alClient
         Caption = 'Classifier'
         ChildSizing.LeftRightSpacing = 5
         ChildSizing.TopBottomSpacing = 5
-        ClientHeight = 65
-        ClientWidth = 476
-        Constraints.MaxWidth = 480
-        Constraints.MinHeight = 90
+        ClientHeight = 52
+        ClientWidth = 380
+        Constraints.MaxWidth = 384
+        Constraints.MinHeight = 72
         TabOrder = 1
         object Label3: TLabel
           AnchorSideLeft.Control = seTolerance
-          Left = 65
-          Height = 20
-          Top = 5
-          Width = 67
+          Left = 53
+          Height = 15
+          Top = 4
+          Width = 53
           BorderSpacing.CellAlignVertical = ccaCenter
           Caption = 'Tolerance:'
           ParentFont = False
@@ -385,16 +413,16 @@ object fmMain: TfmMain
           AnchorSideLeft.Side = asrBottom
           AnchorSideBottom.Control = GroupBox3
           AnchorSideBottom.Side = asrBottom
-          Left = 65
-          Height = 28
+          Left = 53
+          Height = 23
           Hint = 'Difference betwen images considered similar.'#13#10'0 = (almost) only exact matches'#13#10'16 = almost everything'
-          Top = 32
-          Width = 80
+          Top = 24
+          Width = 64
           Anchors = [akLeft, akBottom]
-          BorderSpacing.Left = 5
+          BorderSpacing.Left = 4
           BorderSpacing.CellAlignVertical = ccaCenter
-          Constraints.MaxWidth = 90
-          Constraints.MinWidth = 80
+          Constraints.MaxWidth = 72
+          Constraints.MinWidth = 64
           MaxValue = 16
           ParentFont = False
           TabOrder = 1
@@ -402,10 +430,10 @@ object fmMain: TfmMain
         end
         object Label4: TLabel
           AnchorSideLeft.Control = seMinDimension
-          Left = 150
-          Height = 20
-          Top = 5
-          Width = 59
+          Left = 121
+          Height = 15
+          Top = 4
+          Width = 47
           BorderSpacing.CellAlignVertical = ccaCenter
           Caption = 'Min Size:'
           ParentFont = False
@@ -415,16 +443,16 @@ object fmMain: TfmMain
           AnchorSideLeft.Side = asrBottom
           AnchorSideBottom.Control = GroupBox3
           AnchorSideBottom.Side = asrBottom
-          Left = 150
-          Height = 28
+          Left = 121
+          Height = 23
           Hint = 'Only process images larger in at least one dimension than this.'
-          Top = 32
-          Width = 80
+          Top = 24
+          Width = 64
           Anchors = [akLeft, akBottom]
-          BorderSpacing.Left = 5
+          BorderSpacing.Left = 4
           BorderSpacing.CellAlignVertical = ccaCenter
-          Constraints.MaxWidth = 90
-          Constraints.MinWidth = 80
+          Constraints.MaxWidth = 72
+          Constraints.MinWidth = 64
           MaxValue = 2048
           ParentFont = False
           TabOrder = 2
@@ -437,14 +465,14 @@ object fmMain: TfmMain
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = GroupBox3
           AnchorSideBottom.Side = asrBottom
-          Left = 235
-          Height = 28
-          Top = 32
-          Width = 236
+          Left = 189
+          Height = 22
+          Top = 25
+          Width = 186
           Anchors = [akLeft, akRight, akBottom]
-          BorderSpacing.Left = 5
+          BorderSpacing.Left = 4
           BorderSpacing.CellAlignVertical = ccaCenter
-          Constraints.MaxHeight = 28
+          Constraints.MaxHeight = 22
           ParentFont = False
           TabOrder = 3
         end
@@ -454,10 +482,10 @@ object fmMain: TfmMain
           AnchorSideBottom.Control = GroupBox3
           AnchorSideBottom.Side = asrBottom
           Left = 5
-          Height = 55
+          Height = 42
           Hint = 'Re-Run the classifier with modified settings.'
           Top = 5
-          Width = 55
+          Width = 44
           Anchors = [akTop, akLeft, akBottom]
           Layout = blGlyphBottom
           Images = ilButtons
@@ -468,38 +496,38 @@ object fmMain: TfmMain
       end
       object Bevel1: TBevel
         Left = 0
-        Height = 5
-        Top = 90
-        Width = 839
+        Height = 4
+        Top = 72
+        Width = 671
         Align = alBottom
         Shape = bsSpacer
       end
     end
     object Panel3: TPanel
       Left = 0
-      Height = 605
-      Top = 95
-      Width = 839
+      Height = 484
+      Top = 76
+      Width = 671
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 605
-      ClientWidth = 839
+      ClientHeight = 484
+      ClientWidth = 671
       ParentFont = False
       TabOrder = 0
       object imHoverImage: TImage
         Left = 0
-        Height = 585
+        Height = 469
         Top = 0
-        Width = 839
+        Width = 671
         Align = alClient
         Proportional = True
         Stretch = True
       end
       object lbHoverfile: TLabel
         Left = 0
-        Height = 20
-        Top = 585
-        Width = 839
+        Height = 15
+        Top = 469
+        Width = 671
         Align = alBottom
         Caption = 'lbHoverfile'
         ParentFont = False
@@ -513,10 +541,10 @@ object fmMain: TfmMain
     AnchorSideBottom.Control = pcSidebar
     AnchorSideBottom.Side = asrBottom
     Left = 0
-    Height = 28
+    Height = 22
     Hint = 'About ImageHash...'
-    Top = 672
-    Width = 28
+    Top = 538
+    Width = 22
     Anchors = [akLeft, akBottom]
     Glyph.Data = {
       36040000424D3604000000000000360000002800000010000000100000000100
@@ -560,8 +588,8 @@ object fmMain: TfmMain
     OnClick = btnInfoClick
   end
   object ilMarks: TImageList
-    Left = 918
-    Top = 275
+    Left = 734
+    Top = 220
     Bitmap = {
       4C7A020000001000000010000000C30000000000000078DAC593010E83200C45
       FFD99AEC5EDE831B781B93DDC7A993A5057E0BD3654D7E8886F7DB42C134014A
@@ -575,8 +603,8 @@ object fmMain: TfmMain
   object ilButtons: TImageList
     Height = 36
     Width = 36
-    Left = 656
-    Top = 288
+    Left = 525
+    Top = 230
     Bitmap = {
       4C7A0300000024000000240000002E0800000000000078DAED5B696C5455143E
       A0A2C6256AA2E212E2BEC48520F187BB187FA888A87F5434AE0414457E088822
@@ -648,7 +676,7 @@ object fmMain: TfmMain
     }
   end
   object InfoDialog1: TInfoDialog
-    Left = 816
-    Top = 275
+    Left = 653
+    Top = 220
   end
 end

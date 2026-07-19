@@ -20,7 +20,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="3"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="34"/>
+      <BuildNr Value="36"/>
       <StringTable CompanyName="Martok" FileDescription="ImageHash"/>
     </VersionInfo>
     <BuildModes Count="2">
@@ -185,16 +185,10 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="3">
+    <Exceptions Count="1">
       <Item1>
-        <Name Value="EAbort"/>
+        <Name Value="FPImageException"/>
       </Item1>
-      <Item2>
-        <Name Value="ECodetoolError"/>
-      </Item2>
-      <Item3>
-        <Name Value="EFOpenError"/>
-      </Item3>
     </Exceptions>
   </Debugging>
 </CONFIG>
