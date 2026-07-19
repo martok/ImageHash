@@ -18,13 +18,13 @@ procedure WaitForMultipleThreads(a: PThread; NThreads: Integer; CB: TProcedureOf
 type
   generic TListTool<T> = record
   type
-    TAList = specialize TFPGList<T>;   
+    TAList = specialize TFPGList<T>;
     TAArray = array of T;
     TACompareFunc = function(const Item1, Item2: T): Integer;
     TACompareNest = function(const Item1, Item2: T): Integer is nested;
 
     class function FindSmallestValue(AList: TAList; ACompare: TACompareFunc; out Value: T): integer; static; overload;
-    class function FindSmallestValue(AList: TAList; ACompare: TACompareNest; out Value: T): integer; static; overload; 
+    class function FindSmallestValue(AList: TAList; ACompare: TACompareNest; out Value: T): integer; static; overload;
     class function FindSmallestValue(AArray: TAArray; ACompare: TACompareFunc; out Value: T): integer; static; overload;
     class function FindSmallestValue(AArray: TAArray; ACompare: TACompareNest; out Value: T): integer; static; overload;
   end;
@@ -32,7 +32,7 @@ type
 function GetFileInfos(AFileName: string; out AInfos: TSearchRec): boolean;
 
 function SendFilesToTrash(AFileNames: TStringArray): boolean;
-       
+
 function GetBitCount32(const Num: DWord): NativeUInt; inline;
 function GetBitCount64(const Num: QWord): NativeUInt; inline;
 
@@ -76,20 +76,26 @@ end;
 
 class function TListTool.FindSmallestValue(AList: TAList; ACompare: TACompareNest; out Value: T): integer;
 var
-  i: integer;
+  i, cr: integer;
+  allNeutral: boolean;
 begin
   if AList.Count = 0 then
     Exit(-1);
 
   Value:= AList[0];
   Result:= 0;
+  allNeutral:= True;
 
   for i:= 1 to AList.Count - 1 do begin
-    if ACompare(AList[i], Value) < 0 then begin
+    cr:= ACompare(AList[i], Value);
+    allNeutral:= allNeutral and (cr = 0);
+    if cr < 0 then begin
       Result:= i;
       Value:= AList[i];
     end;
   end;
+  if allNeutral then
+    Exit(-1);
 end;
 
 class function TListTool.FindSmallestValue(AArray: TAArray; ACompare: TACompareFunc; out Value: T): integer;
@@ -104,20 +110,26 @@ end;
 
 class function TListTool.FindSmallestValue(AArray: TAArray; ACompare: TACompareNest; out Value: T): integer;
 var
-  i: integer;
+  i, cr: integer;
+  allNeutral: boolean;
 begin
   if Length(AArray) = 0 then
     Exit(-1);
 
   Value:= AArray[0];
   Result:= 0;
+  allNeutral:= True;
 
   for i:= 1 to high(AArray) do begin
-    if ACompare(AArray[i], Value) < 0 then begin
+    cr:= ACompare(AArray[i], Value);
+    allNeutral:= allNeutral and (cr = 0);
+    if cr < 0 then begin
       Result:= i;
       Value:= AArray[i];
     end;
   end;
+  if allNeutral then
+    Exit(-1);
 end;
 
 function GetFileInfos(AFileName: string; out AInfos: TSearchRec): boolean;
@@ -147,7 +159,7 @@ asm
   POPCNT @result, num
 end;
 
-{$IFDEF CPUX86}  
+{$IFDEF CPUX86}
 function GetBitCount64(const Num: QWord): NativeUInt; inline;
 begin
   Result:= GetBitCount32(Lo(Num)) + GetBitCount32(Hi(Num));
