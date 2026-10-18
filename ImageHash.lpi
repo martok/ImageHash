@@ -6,7 +6,6 @@
     <General>
       <Flags>
         <AlwaysBuild Value="True"/>
-        <CompatibilityMode Value="True"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
       <Title Value="ImageHash"/>
@@ -22,9 +21,9 @@
       <BuildNr Value="37"/>
       <StringTable CompanyName="Martok" FileDescription="ImageHash"/>
     </VersionInfo>
-    <BuildModes Count="2">
-      <Item1 Name="Default" Default="True"/>
-      <Item2 Name="Win64">
+    <BuildModes>
+      <Item Name="Default" Default="True"/>
+      <Item Name="Win64">
         <CompilerOptions>
           <Version Value="11"/>
           <PathDelim Value="\"/>
@@ -62,7 +61,7 @@
             </OtherDefines>
           </Other>
         </CompilerOptions>
-      </Item2>
+      </Item>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
@@ -70,84 +69,84 @@
     <RunParams>
       <FormatVersion Value="2"/>
     </RunParams>
-    <RequiredPackages Count="2">
-      <Item1>
+    <RequiredPackages>
+      <Item>
         <PackageName Value="bitSpaceControls"/>
-      </Item1>
-      <Item2>
+      </Item>
+      <Item>
         <PackageName Value="LCL"/>
-      </Item2>
+      </Item>
     </RequiredPackages>
-    <Units Count="15">
-      <Unit0>
+    <Units>
+      <Unit>
         <Filename Value="ImageHash.lpr"/>
         <IsPartOfProject Value="True"/>
-      </Unit0>
-      <Unit1>
+      </Unit>
+      <Unit>
         <Filename Value="uFrmMain.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fmMain"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit1>
-      <Unit2>
+      </Unit>
+      <Unit>
         <Filename Value="uImageHashing.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit2>
-      <Unit3>
+      </Unit>
+      <Unit>
         <Filename Value="uThreadScanner.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit3>
-      <Unit4>
+      </Unit>
+      <Unit>
         <Filename Value="uThreadHashing.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit4>
-      <Unit5>
+      </Unit>
+      <Unit>
         <Filename Value="uThreadClassifier.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit5>
-      <Unit6>
+      </Unit>
+      <Unit>
         <Filename Value="uUtils.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit6>
-      <Unit7>
+      </Unit>
+      <Unit>
         <Filename Value="uFrmAutoMark.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="frmAutoMark"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit7>
-      <Unit8>
+      </Unit>
+      <Unit>
         <Filename Value="lib\fpreadjpeg-turbo\FPReadJPEGTurbo.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit8>
-      <Unit9>
+      </Unit>
+      <Unit>
         <Filename Value="lib\fpreadjpeg-turbo\turbojpeg.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit9>
-      <Unit10>
+      </Unit>
+      <Unit>
         <Filename Value="uFrmPathEditor.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="frmPathEditor"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
-      </Unit10>
-      <Unit11>
+      </Unit>
+      <Unit>
         <Filename Value="uCanvasInterpolation.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit11>
-      <Unit12>
+      </Unit>
+      <Unit>
         <Filename Value="uNotifier.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit12>
-      <Unit13>
+      </Unit>
+      <Unit>
         <Filename Value="uFileSearcher.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit13>
-      <Unit14>
+      </Unit>
+      <Unit>
         <Filename Value="lib\fpreadwebp\FPReadWebP.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit14>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -181,17 +180,16 @@
       <CustomOptions Value="-CpCOREI
 -OpCOREI
 -dUSE_JPEGTURBO"/>
-      <OtherDefines Count="2">
-        <Define0 Value="USE_JPEGTURBO"/>
-        <Define1 Value="DEBUG"/>
-      </OtherDefines>
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="1">
-      <Item1>
+    <Exceptions>
+      <Item>
         <Name Value="FPImageException"/>
-      </Item1>
+      </Item>
+      <Item>
+        <Name Value="EOutOfMemory"/>
+      </Item>
     </Exceptions>
   </Debugging>
 </CONFIG>
