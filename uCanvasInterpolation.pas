@@ -1,6 +1,6 @@
 unit uCanvasInterpolation;
 
-// This Unit is a 1:1 copy of the same classes in FPCanvas, but optimized slightly.
+// This Unit is a 1:1 copy of the same classes in FPCanvas (before ResampleImage was introduced), but optimized slightly.
 
 {$mode ObjFPC}{$H+}
 {$Optimization LEVEL4}
@@ -14,6 +14,13 @@ uses
   Classes, SysUtils, FPImage, FPCanvas;
 
 type
+  { TBoxInterpolation }
+
+  TBoxInterpolation = class(TFPCustomInterpolation)
+  public
+    procedure Execute (x,y,w,h:integer); override;
+  end;
+
   { TFPBaseInterpolationOpt }
 
   TFPBaseInterpolationOpt = class (TFPCustomInterpolation)
@@ -39,6 +46,19 @@ implementation
 uses
   Math;
 
+{ TBoxInterpolation }
+
+procedure TBoxInterpolation.Execute(x,y,w,h:integer);
+var
+  dx, dy, iw, ih: Integer;
+begin
+  iw := Image.Width;
+  ih := Image.Height;
+
+  for dx := 0 to w-1 do
+    for dy := 0 to h-1 do
+      Canvas.DrawPixel(x+dx,y+dy, Image.Colors[dx*iw div w, dy*ih div h]);
+end;
 
 { TFPBaseInterpolationOpt }
 

@@ -266,7 +266,7 @@ begin
   // decimate to something useful first, but keep enough information so that downscaling later does not change the DHash
   fac:= Min(source.Width, source.Height) / Max(HASH_SIZE*40, thumbsize);
   if fac > 1 then begin
-    inter:= imgScaleCompatible(source, trunc(source.Width/fac), trunc(source.Height/fac), TFPBoxInterpolation.Create);
+    inter:= imgScaleCompatible(source, trunc(source.Width/fac), trunc(source.Height/fac), TBoxInterpolation.Create);
     FreeInter:= true;
     // free fullsize image early
     FreeAndNil(source);
