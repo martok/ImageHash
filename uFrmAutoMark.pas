@@ -113,10 +113,10 @@ var
     if cbDirectoryOrder.Checked then begin
       x:= im1^.Sourcedir;
       y:= im2^.Sourcedir;
-      if x<y then
-        Exit(-1);
-      if y>x then
+      if x > y then
         Exit(1);
+      if x < y then
+        Exit(-1);
     end;
     Result:= 0;
   end;
