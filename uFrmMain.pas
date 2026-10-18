@@ -141,7 +141,8 @@ begin
   Caption:= Application.Title;
   pcSidebar.ActivePage:= tsScanSetup;
 
-  seThreads.Value:= Max(1, TThread.ProcessorCount-1);
+  // with about 3600M usable heap and ~350M uncompressed for average-resolution images, more than 10 threads gets too many OOM
+  seThreads.Value:= EnsureRange(TThread.ProcessorCount-1, 1, 10);
 
   meLog.Clear;
   lbHoverfile.Caption:= '';

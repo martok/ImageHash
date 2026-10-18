@@ -71,19 +71,24 @@ var
   source: TLazIntfImage;
   sourceformat: TRawImage;
 begin
+  Result:= nil;
   try
     sourceformat.Init;
     sourceformat.Description.Init_BPP24_B8G8R8_BIO_TTB(0,0);
     sourceformat.CreateData(false);
     source:= TLazIntfImage.Create(0,0);
-    source.SetRawImage(sourceformat);
+    source.SetRawImage(sourceformat, True);
     source.LoadFromFile(aFile);
-    if not Assigned(source.PixelData) then
-      raise EOutOfMemory.Create(SOutOfMemory);
-    Result:= source;
+    if Assigned(source.PixelData) then
+      Result:= source;
   except
     FreeAndNil(source);
     raise;
+  end;
+  // free image before raising to free up enough memory for the exception handler
+  if not Assigned(Result) then begin
+    FreeAndNil(source);
+    raise EOutOfMemory.Create(SOutOfMemory);
   end;
 end;
 
@@ -122,14 +127,17 @@ var
   scale: TLazIntfImage;
   scalecanvas: TLazCanvas;
 begin
+  Result:= nil;
   try
     try
       scale:= TLazIntfImage.CreateCompatible(source, Width, Height);
       scalecanvas:= TLazCanvas.Create(scale);
       scalecanvas.Interpolation:= Interpolation;
       scalecanvas.DrawingMode:= dmOpaque;
-      scalecanvas.StretchDraw(0, 0, scale.Width, scale.Height, source);
-      Result:= scale;
+      if Assigned(scale.PixelData) then begin
+        scalecanvas.StretchDraw(0, 0, scale.Width, scale.Height, source);
+        Result:= scale;
+      end;
     finally
       Interpolation.Free;
       FreeAndNil(scalecanvas);
@@ -137,6 +145,11 @@ begin
   except
     FreeAndNil(scale);
     raise;
+  end;
+  // free image before raising to free up enough memory for the exception handler
+  if not Assigned(Result) then begin
+    FreeAndNil(scale);
+    raise EOutOfMemory.Create(SOutOfMemory);
   end;
 end;
 
@@ -255,6 +268,8 @@ begin
   if fac > 1 then begin
     inter:= imgScaleCompatible(source, trunc(source.Width/fac), trunc(source.Height/fac), TFPBoxInterpolation.Create);
     FreeInter:= true;
+    // free fullsize image early
+    FreeAndNil(source);
   end
   else
     inter:= source;
